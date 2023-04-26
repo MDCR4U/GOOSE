@@ -102,7 +102,7 @@ url = ftpurl + "admin/key.json"
 
 #取得 系統 KEY     
 url = ftpurl + "admin/key.json" #+ wjson_file #http://www.abc.com/cust.json"
-
+print("initial key " + url )
 response = urllib.request.urlopen(url)
 data = response.read().decode("utf-8")
 js_dta = json.loads(data)
@@ -110,7 +110,9 @@ line_access_token = js_dta["line_token"]
 line_channel_secret = js_dta["Channel Secret"]
 gpt_token           = js_dta["gptkey"]
 
+print("secret " + line_channel_secret)
 
+print("token " + line_access_token)
 # Channel Access Token 
 line_bot_api = LineBotApi(line_access_token)
 # Channel Secret
