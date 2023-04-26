@@ -129,12 +129,12 @@ def callback():
     # get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
-    # handle webhook body
+    print(" handle webhook body")
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
-    print("0000 - CALL BACK 處理結束 ")
+   #print("0000 - CALL BACK 處理結束 ")
     return 'OK'  #ok(200)
 
 
