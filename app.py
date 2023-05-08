@@ -32,11 +32,15 @@ import smtplib
 import time
 import sys
 import urllib.request
+import smtp_validate
+
  
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from sendmails import *
 from senddemomail import *
+from smtp_validate import * 
+
 
 #==================  for email ===================
 
@@ -49,7 +53,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import *
-
+from linebot.models import   TextSendMessage
 
 #======這裡是呼叫的檔案內容=====
 from message import *
@@ -70,16 +74,15 @@ import time
 #======python的函數庫==========
 import json 
 import urllib.request
+ 
 
 app = Flask(__name__)
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 #Global Variable
-line_access_token = ''
-line_channel_secret = ''
 ftpurl = ''
 gpt_token = ''
-line_bot_api = LineBotApi('gd2k8snxpn3PP+nC+spxDIgQF6ZTtjfS/vHmqOIEJ8W/B1bryahPh61EfFIepnHqfjTQ4zhc29120TvtHVjk4dMB5vkrJFtvcjO07389gomlkggI/rMJCoid9PCCr6O3v0dTY2R3n4FFA6IMr1D5twdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('82ab0090dc70c5f7d3a6c62fb1e09eb8')
+#line_bot_api = LineBotApi('gd2k8snxpn3PP+nC+spxDIgQF6ZTtjfS/vHmqOIEJ8W/B1bryahPh61EfFIepnHqfjTQ4zhc29120TvtHVjk4dMB5vkrJFtvcjO07389gomlkggI/rMJCoid9PCCr6O3v0dTY2R3n4FFA6IMr1D5twdB04t89/1O/w1cDnyilFU=')
+#handler = WebhookHandler('82ab0090dc70c5f7d3a6c62fb1e09eb8')
 line_user_id = ''
 github_id ="MDCR4U"
 github_prj="LineBot"
@@ -88,34 +91,28 @@ sendmail_auth = 'N'
 
 ispostback = 'N'
 
-with open("config.json", "r", encoding="utf-8") as f:
-    loaded_data = json.load(f)
+#with open("config.json", "r", encoding="utf-8") as f:
+#    loaded_data = json.load(f)
+#
+#ftpurl = loaded_data["ftpurl"]
+#print(ftpurl) 
 
-ftpurl = loaded_data["ftpurl"]
+# 读取环境变量的值
+ftpurl = os.environ.get('linebot_ftpurl')
 
-# download key file
+
 # 确保当前目录下存在 "admin" 文件夹
 if not os.path.exists("admin"):
     os.makedirs("admin")
-#copy ftp to current root    
-url = ftpurl + "admin/key.json" 
-
-#取得 系統 KEY     
-url = ftpurl + "admin/key.json" #+ wjson_file #http://www.abc.com/cust.json"
-print("initial key " + url )
-response = urllib.request.urlopen(url)
-data = response.read().decode("utf-8")
-js_dta = json.loads(data)
-line_access_token = js_dta["line_token"]
-line_channel_secret = js_dta["Channel Secret"]
-gpt_token           = js_dta["gptkey"]
-
-print("secret " + line_channel_secret)
-
-print("token " + line_access_token)
+    
 # Channel Access Token 
-line_bot_api = LineBotApi(line_access_token)
+#
 # Channel Secret
+
+line_access_token = os.environ.get('line_Token')
+line_channel_secret = os.environ.get('line_Channel_Secret')
+
+line_bot_api = LineBotApi(line_access_token)
 handler = WebhookHandler(line_channel_secret)
 
 
@@ -125,7 +122,7 @@ handler = WebhookHandler(line_channel_secret)
 @app.route("/rich4u", methods=['POST'])
 def callback():
 
-    print(" 0000 - 開始 call back 處理")
+    # print(" 0000 - 開始 call back 處理")
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
     # get request body as text
@@ -133,7 +130,7 @@ def callback():
     app.logger.info("Request body: " + body)
   
     try:
-        print(" handle webhook body")
+        #print(" handle webhook body")
         handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
@@ -144,48 +141,44 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print("  0010 - 開始 處理 handle message entry")
+
+
+    #print("  0010 - 開始 處理 handle message entry")
     user_id = ""
     group_id = ""
     usr =event.source.user_id
+    wsid = usr 
     user_id = event.source.user_id
     user_type = event.source.type
     if user_type != "user" :
         group_id =  event.source.group_id
+        wsid = group_id
     
     line_user_id = usr
+
     ftpurl = get_ftpurl()
 
     userFolder = check_line_id(ftpurl ,line_user_id)
+    print("userFolder " + userFolder)
     msg = event.message.text
 
     #@#SETUP#mdcgrniu           https://mdcgenius.000webhostapp.com/
     wkmsg = msg.split('#')
 
-    if msg  == '@?' :
-        msg = '@#token# \n@setup#ftpurl\n/smail#nnn#\n/demomail#receiver#\n@#INFO'
+    line_access_token = os.environ.get('line_Token')
+    #line_channel_secret = os.environ.get('line_Channel_Secret')
+    line_bot_api = LineBotApi(line_access_token)
+    if  msg[0:5].upper() == "@HELP"  :    
+        msg = '@#token# \n/smail#nnn#\n/demomail#receiver#\n@INFO'
         message = TextSendMessage(text="指令表 \n" + msg)
         line_bot_api.reply_message(event.reply_token, message)  
         return 
-    if  msg[0:1] == "@" and len(wkmsg) > 1 :   #if msg[1:5].upper()  == 'SETUP': 
-        if wkmsg[1].upper() == 'SETUP': 
-            ftpurl = wkmsg[2]
-            data = {
-                "ftpurl": "https://" + ftpurl + "000webhostapp.com/"   #ftpurl
-            }
-            # 确保当前目录下存在 "admin" 文件夹
-            if not os.path.exists("admin"):
-                os.makedirs("admin")
+    if  msg[0:5].upper() == "/LIST"  :    
+        listfile()
+        return  
 
-            # 将字典写入 JSON 文件
-            with open("config.json", "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
-                message = TextSendMessage(text="system set up complete" )
-                line_bot_api.reply_message(event.reply_token, message)  
-            return 
-
-    if  msg[0:1] == "@" and len(wkmsg) > 1 :
-        if wkmsg[1].upper()== "INFO" :
+    if  msg[0:5].upper() == "@INFO"  :
+        
             wsinformation = get_informatiion(usr,group_id,user_type)
             message = TextSendMessage(text="informtion :" + wsinformation)
             line_bot_api.reply_message(event.reply_token, message)  
@@ -255,12 +248,48 @@ def handle_message(event):
         if userFolder == '' :
             message = TextSendMessage(text= "找不到 發送信件的授權資料，請記住您的代碼 " + usr +"\n與 系統管理員聯絡申請授權 " )
             line_bot_api.reply_message(event.reply_token, message)              
+            return()
+        
         from datetime import datetime
         now = datetime.now() # current date and time
         #增加 user folder
-        sendlog = send_mail(usr,msg,userFolder,user_id, group_id)
-        print("send mail complete #############################################")
+        mailconfig= "/mailconfig.json"
+        wsftpflr =  os.environ.get('linebot_ftpurl')
+        url = wsftpflr + userFolder + mailconfig #http://www.abc.com/cust.json"
+        #tracemsg(line_access_token,url,wsid)
+        response = urllib.request.urlopen(url)
+        data = response.read().decode("utf-8")
+        js_dta = json.loads(data)
+        batch =js_dta["batch"] 
+
+        j = 1
+        wshow = ''
+        while j <= int(batch) :
+            sendlog = send_mail(usr,msg,userFolder,user_id, group_id)
+            wshow = wshow + sendlog + "\n" 
+            time.sleep(0.5)
+            j = j + 1
+        wshow = wshow + "\ｎ請稍後  繼續發送．．．．．"
+         
+         
+        line_bot_api = LineBotApi(line_access_token)
+        message = TextSendMessage(text="發送紀錄 :\n"+ wshow )
+        line_bot_api.reply_message(event.reply_token, message)    
+
+    elif '/SMTP' in msg.upper():     #isupper(), islower(), lower(), upper()
+        print (" CALL CHECK SMTP ")
+        #if userFolder == '' :
+        #    message = TextSendMessage(text= "找不到 發送信件的授權資料，請記住您的代碼 " + usr +"\n與 系統管理員聯絡申請授權 " )
+        #    line_bot_api.reply_message(event.reply_token, message)              
+        #from datetime import datetime
+        #now = datetime.now() # current date and time
+        #增加 user folder
+        sts = smtp_validate.smtp_check(msg,user_id, group_id)
     
+        print("Check smtp  complete #############################################")
+        line_bot_api = LineBotApi(line_access_token)
+        message = TextSendMessage(text="validate_smtp RETURN  "  + sts )
+        line_bot_api.push_message(user_id, message)    
         #message = TextSendMessage(text= "完成信件發送 : " + sendlog)
         #line_bot_api.reply_message(event.reply_token, message)  
     elif msg.upper()[0:9] == '/DEMOMAIL'  :
@@ -293,21 +322,27 @@ def handle_message(event):
         user_id = event.source.user_id
         user_type = event.source.type
         print("echo message " + user_id)
-        if user_type == "user":
-            if user_id.startswith("U"):
-            # 手機版的 LINE
-                reply_text = "您是使用手機版的 LINE"
-            else:
-                # 電腦版的 LINE
-                reply_text = "您是使用電腦版的 LINE"
-        else:
-            # 群組或聊天室
-            reply_text = "您是在群組或聊天室中"
+        #if user_type == "user":
+        #    if user_id.startswith("U"):
+        #    # 手機版的 LINE
+        #        reply_text = "您是使用手機版的 LINE"
+        #    else:
+        #        # 電腦版的 LINE
+        #        reply_text = "您是使用電腦版的 LINE"
+        #else:
+        #    # 群組或聊天室
+        #    reply_text = "您是在群組或聊天室中"
 
-             
-        message = TextSendMessage(text= reply_text + "\您是說 : " + msg + "嗎? " + userFolder)
+        #print(line_access_token)
+        channel_access_token = "gd2k8snxpn3PP+nC+spxDIgQF6ZTtjfS/vHmqOIEJ8W/B1bryahPh61EfFIepnHqfjTQ4zhc29120TvtHVjk4dMB5vkrJFtvcjO07389gomlkggI/rMJCoid9PCCr6O3v0dTY2R3n4FFA6IMr1D5twdB04t89/1O/w1cDnyilFU="
+      #  print("channel_access_token *" + channel_access_token + "*")
+       # print("   line_access_token *" + line_access_token + "*")
+# 建立 LineBotApi 物件
+        line_bot_api = LineBotApi(line_access_token)
+        message = TextSendMessage(text=" 您說 " + msg  )
         line_bot_api.reply_message(event.reply_token,  message )
-
+        return('')
+  
     
      
     
@@ -414,33 +449,44 @@ def token(msg):
     return message    
 
 def get_ftpurl():
-    with open("config.json", "r", encoding="utf-8") as f:
-        loaded_data = json.load(f)
-        ftpurl = loaded_data["ftpurl"]
-        return(ftpurl)
+    #with open("config.json", "r", encoding="utf-8") as f:
+    #    loaded_data = json.load(f)
+    #    ftpurl = loaded_data["ftpurl"]
+    #    return(ftpurl)
+    print("get ftpurl")
+    ftpurl = os.environ.get('linebot_ftpurl')
+    print(ftpurl)
+    return(ftpurl)
 
 def get_informatiion(wsusr,group_id,user_type) :
+   
     wsftp = get_ftpurl()
-    url = ftpurl + "admin/key.json" #+ wjson_file #http://www.abc.com/cust.json"
-    print (" key url " + url )
-    response = urllib.request.urlopen(url)
-    data = response.read().decode("utf-8")
-    loaded_data = json.loads(data)
-    wsline_access_token = loaded_data["line_token"]
-    wsline_channel_secret = loaded_data["Channel Secret"]
+ 
 
-    return ("type : " + user_type + "\nGroup :" + group_id + "\nUSER : " + wsusr + "\n work ftp " + wsftp + "\n Line Access token " +  wsline_access_token + "\nChannel Secret" + wsline_channel_secret)
+    #url = ftpurl + "admin/key.json" #+ wjson_file #http://www.abc.com/cust.json"
+    #print (" key url " + url )
+    ##response = urllib.request.urlopen(url)
+    #data = response.read().decode("utf-8")
+    #loaded_data = json.loads(data)
+
+    wsline_access_token = os.environ.get('line_Token')
+    print(wsline_access_token)
+    #wsline_channel_secret = os.environ.get('line_Channel_Secret')
+    return ("type : " + user_type + "\n\nGroup :" + group_id + "\n\nUSER : " + wsusr + "\n\n work ftp " + wsftp + "\n\n Line Access token " +  wsline_access_token )
+
     
     
-#def loadfile():
+    
+def loadfile():
    #可以使用 Python 的 urllib 模組中的 urlretrieve() 函式來下載檔案。以下是一個示範程式碼：
    #ythonCopy code
 
 
-#   url = 'https://www.example.com/example_file.txt'
-#   file_name = 'example_file.txt'
+   url = 'https://www.example.com/example_file.txt'
+   file_name = 'example_file.txt'
 
-#   urllib.request.urlretrieve(url, file_name)
+   urllib.request.urlretrieve(url, file_name)
+   
    #url 是要下載的檔案的 URL，
    # file_name 則是下載後要儲存的檔案名稱和路徑
    # （如果只指定檔案名稱，則預設儲存到目前的資料夾中）。 urlretrieve() 函式會從指定的 URL 下載檔案，並將其儲存在 file_name 指定的位置。   

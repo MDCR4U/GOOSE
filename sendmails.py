@@ -11,6 +11,7 @@ import smtplib
 import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import requests
 
 # LINT BOT API
 from linebot import LineBotApi
@@ -20,6 +21,8 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from flask import Flask, request, abort
 # LINEＢＯＴ　ＡＰＩ
+ 
+from bs4 import BeautifulSoup
 
  
 from flask import Flask
@@ -28,42 +31,33 @@ from flask import Flask
  #================= for send mail =================
  
 def send_mail(lineid,wmsg,userFolder, user_id,group_id):
-    print(" 開始發送信件")
+    print(" aaaa 開始發送信件 " + wmsg )
+    #userFolder = 'admin'
     smtpfn =""
     mailfn = ""
     subjectfn =""
     bodyfn = ""
     smtpidx = ""
     mailidx = ""
-
-#    print ("sendmail by :  lineid  =  " + user_id + "*group id = " + group_id) 
-    
+    isnew = 'N'
     wsftpflr = '' 
-    with open("config.json", "r", encoding="utf-8") as f:
-        loaded_data = json.load(f)
-        url  = loaded_data["ftpurl"]
-    
-    wsftpflr = url 
+    wsftpflr =  os.environ.get('linebot_ftpurl')
+    line_access_token = os.environ.get('line_Token')
 
-    url = url + "admin/key.json" #+ wjson_file #http://www.abc.com/cust.json"
 
-    response = urllib.request.urlopen(url)
-    data = response.read().decode("utf-8")
-    js_dta = json.loads(data)
-    line_access_token = js_dta["line_token"]
-    line_bot_api = LineBotApi(line_access_token)
-
+#    tracemsg(line_access_token,"開始發送信件 ",user_id)
     push_to = ""
     if group_id != "":
         push_to = group_id 
     else :
         push_to = user_id    
+ 
 
-    
+ 
+
  # 發送比數
     wsmsg =  wmsg.split('#')   # msg = '/smail#90#'
     wstarget = wsmsg[1]
-    print("target " + wstarget ) 
     if (wstarget.isdigit()):
         targetno = int(wstarget)
     else : 
@@ -76,8 +70,9 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         return ('使用者 ' + lineid + ' 發送信件功能未啟動')
      
 # 取得發送郵件  環境
-    mailconfig= "mailconfig.json"
-    url = wsftpflr + "admin/" + mailconfig #http://www.abc.com/cust.json"
+    mailconfig= "/mailconfig.json"
+    url = wsftpflr + userFolder + mailconfig #http://www.abc.com/cust.json"
+    #tracemsg(line_access_token,url,push_to)
     response = urllib.request.urlopen(url)
     data = response.read().decode("utf-8")
     js_dta = json.loads(data)
@@ -90,27 +85,104 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     wspush = int(js_dta["push"])
 
 
+    directory = "tmp"  # 要创建的目录名称
 
+    #try:
+    #    os.makedirs(directory)
+    #    print("目录已成功创建")
+    #except FileExistsError:
+    ##    print("目录已经存在")
+    #except OSError as e:
+    #    print("创建目录时出错:", e)
+
+    
+  #  if not os.path.exists('tmp' ):
+  #      os.makedirs('tmp')
+
+# 取得 發送紀錄
+    logfn = 'sendmail.log'  #build_logfn(mailfn) + '_log.txt'
+    if file_exsit(logfn) == 'N':
+        wserrmsg = "發送紀錄 不存在 "
+        #tracemsg(line_access_token,wserrmsg,push_to)
+        return("發送紀錄 不存在 ")
+    
+    file = open('sendmail.log','r',encoding="utf-8")
+    wslog  = file.readline()
+    wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8') 
+    wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' ' + mailfn 
+    
+   
+    if wslogs[0] != mailfn  :
+        wslogs[1] = mailidx
+        wslogs[2] = smtpidx 
+        wslogs[3] = '0'
+        wstr = mailfn + "," + mailidx + "," + smtpidx + "," + '0'
+        isnew = 'Y'
+        tracemsg(line_access_token,wserrmsg,push_to)
+        with open("sendmail.log", "w", encoding="utf-8") as f:            
+            f.write(wstr) 
+            f.close()
+        file = open('sendmail.log','r',encoding="utf-8")
+        wslog  = file.readline()
+        wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8')     
+        wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' ' + mailfn 
+        #tracemsg(line_access_token,wserrmsg,push_to)
+        
+        f.close()
+             
+    mailidx = wslogs[1]
+    smtpidx = wslogs[2]
+    sendcnt = int(wslogs[3]) + 1
+    file.close()
+
+ 
 
     #https://github.com/MDCR4U/LineBot/blob/main/mail.csv
     
     smtp_server = "smtp.office365.com"
     smtp_port = 587
-
-    print("=====send mail start userFolder = " + userFolder)
-     
-    #url = wsftpflr + userFolder.strip('\n') + "_smtp.csv"
-    url = wsftpflr + userFolder.strip('\n') + "/" + smtpfn   #"/smtp.csv"
+    noMails = 0
     
-    try:
-        response = urllib.request.urlopen(url)                                              # 開啟 URL
-        reader = csv.reader(response.read().decode('utf-8').splitlines())                   # 讀取 CSV 檔案
-        next(reader)                                                                        # 跳過表頭
-        smtp_list = [row for row in reader]                                                 # 轉換為列表
-        response.close()                                                                    # 關閉 URL
-        smtp_count = len(smtp_list)   
-    except :
-        return ("寄件者資料 讀取錯誤 \n " + url)
+    if isnew == 'Y' :
+        
+        tracemsg(line_access_token," 等候 環境建立" ,push_to)
+        url = wsftpflr + userFolder.strip('\n') + "/" + smtpfn   #"/smtp.csv"
+        
+        #tracemsg(line_access_token," copy from url " + url ,push_to)
+        copy_to_local(url ,  smtpfn,line_access_token,push_to  )
+        
+        url = wsftpflr + userFolder.strip('\n') +"/" + mailfn #'/mail.csv'
+        #tracemsg(line_access_token," copy from url " + url ,push_to)
+        copy_to_local(url , mailfn,line_access_token,push_to )
+        
+        url = wsftpflr + userFolder.strip('\n') + "/" + bodyfn # '/body.txt'
+        #tracemsg(line_access_token," copy from url " + url ,push_to)
+        copy_to_local(url , bodyfn,line_access_token,push_to)
+        
+        url = wsftpflr + userFolder.strip('\n') +  "/" + subjectfn #'/subject.txt'
+        #tracemsg(line_access_token," copy from url " + url ,push_to)
+        copy_to_local(url , subjectfn ,line_access_token,push_to)
+     
+
+
+    with open( smtpfn, "r", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        smtp_list = [row for row in reader]        
+    wsstr = ' '.join (str(e) for e in smtp_list)
+    wserrmsg = "smtp list   \n" + wsstr
+    #tracemsg(line_access_token,wserrmsg ,push_to)
+    
+    # url file
+    if 1 == 2 :                # url file
+        try:
+            response = urllib.request.urlopen(url)                                              # 開啟 URL
+            reader = csv.reader(response.read().decode('utf-8').splitlines())                   # 讀取 CSV 檔案
+            next(reader)                                                                        # 跳過表頭
+            smtp_list = [row for row in reader]                                                 # 轉換為列表
+            response.close()                                                                    # 關閉 URL
+            smtp_count = len(smtp_list)   
+        except :
+            return ("寄件者資料 讀取錯誤 \n " + url)
 
 #    print("發信者 人數" + str(len(smtp_list)))
 # 讀取郵件發送記錄
@@ -125,15 +197,26 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 
 # 讀取收件人列表
     #url = wsftpflr + userFolder.strip('\n') + '_mail.csv'
-    url = wsftpflr + userFolder.strip('\n') +"/" + mailfn #'/mail.csv'
-    n = counter                                                 # 要跳過的行數
 
-    try:
-        with urllib.request.urlopen(url) as response:
-            reader = csv.reader(response.read().decode('utf-8').splitlines())
-            rows = [row for i, row in enumerate(reader) if i >= n]
-    except urllib.error.URLError:
-        return ("收件者資料讀取錯誤 : " + url )
+    n = counter                                                 # 要跳過的行數
+  
+
+    with open(mailfn, "r", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        #rows = [row for i, row in enumerate(reader) if i >= n]
+        rows = [row for i, row in enumerate(reader) if i == n]   # 只得取  第 n筆
+        wsstr = ' '.join (str(e) for e in rows)  + '----' + str(counter)
+        noMails = len(rows)
+        #tracemsg(line_access_token,str(noMails)  ,push_to)
+        #return ('')
+
+    if 1 ==2 :       # url file
+        try:
+            with urllib.request.urlopen(url) as response:
+                reader = csv.reader(response.read().decode('utf-8').splitlines())
+                rows = [row for i, row in enumerate(reader) if i >= n]
+        except urllib.error.URLError:
+            return ("收件者資料讀取錯誤 : " + url )
 
 # 設置發件人的初始賬戶信息
      
@@ -153,41 +236,62 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 
 #getbody 
     # 檢查 發送內容
-    url = wsftpflr + userFolder.strip('\n') + "/" + bodyfn # '/body.txt'
-    try:
-        file = urllib.request.urlopen(url)
-        content = ''
-        wsbody  = file.readline()
-        while wsbody:
-            content  = content + wsbody.decode('utf-8') 
+
+    file = open(bodyfn,'r',encoding="utf-8")
+    content = ''
+    wsbody  = file.readline()
+    while wsbody:
+            content  = content + wsbody #.decode('utf-8') 
             wsbody  = file.readline()
+    file.close()
+
+
+    if 1==2  :    #url file
+        try:
+            file = urllib.request.urlopen(url)
+            content = ''
+            wsbody  = file.readline()
+            while wsbody:
+                content  = content + wsbody.decode('utf-8') 
+                wsbody  = file.readline()
     # 關閉 URL
-        file.close()
-    except :
-         return ("信件內容錯誤 :" + url)     
+            file.close()
+        except :
+             return ("信件內容錯誤 :" + url)     
     
 
 
 #getsubject 
 
      # 檢查 主旨
-    #url = url = wsftpflr + userFolder.strip('\n') +  '_subject.txt'
-    url = wsftpflr + userFolder.strip('\n') +  "/" + subjectfn #'/subject.txt'
-    try:
-        file = urllib.request.urlopen(url)
-        wsubject = ''
-        wsubject  = file.readline()
-        subject = wsubject.decode('utf-8') 
-    # 關閉 URL
-        file.close()
-    except:     
-        return ("信件主旨讀取錯誤:"+ url)
+    file = open(subjectfn,'r',encoding="utf-8")
+    wsubject  = file.readline()
+    subject = wsubject #.decode('utf-8') 
+    file.close()
+    #tracemsg(line_access_token,subject ,push_to)
+    if 1 == 2:    #ｕｒｌ　ｆｉｌｅ
+        try:
+            file = urllib.request.urlopen(url)
+            wsubject = ''
+            wsubject  = file.readline()
+            subject = wsubject.decode('utf-8') 
+        # 關閉 URL
+            file.close()
+        except:     
+            return ("信件主旨讀取錯誤:"+ url)
  
  
 
 # 開始發送郵件
-    sendcnt = 0
+    #sendcnt = 0
     loopidx = 0 
+    wsmail_cnt = len(rows)
+    wsemail = ''
+    if counter   > targetno  :
+        return( "\n\n" + "發送完成  累計發送   :" +  str(targetno)  + " 封信件"  )
+    
+    if noMails == 0  :
+        return( "\n\n" + "名單已全部發送完成 累計發送   :" +  str(targetno)  + " 封信件，\n 請從新上傳名單檔案"  )
     
     for j, row in enumerate(rows):    #rows : mail.csv
          
@@ -199,9 +303,10 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         smtp_password = smtp_list[smtp_idx][1]
         
         to_addr = row[0]
+        wsemail = to_addr
+         
+        wsemail = 'xxx' + to_addr[3:]
 
-        print("from  " + smtp_username  + " ===>  " + to_addr )
-       
         #cc_addrs = [x for x in row[1:batch_size+1] if x and "@" in x]
         #print(cc_addrs)
         #subject = smtp_username +"臉書優質紛絲團，邀請您 按讚支持"
@@ -214,15 +319,10 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     
     #if cc_addrs:
     #    message["Cc"] = ",".join(cc_addrs)
-    
-        #cc_email = 'eel.honey@yahoo.com.tw,ejob@livemail.tw'.split(',')
-        
-  
+            #cc_email = 'eel.honey@yahoo.com.tw,ejob@livemail.tw'.split(',')
     #message['Cc'] = ','.join(cc_email)
-
         message["Subject"] = subject
         message.attach(MIMEText(content, "plain", "utf-8"))
-    
     # 添加附件
     #filename = "test.txt"
     #with open(filename, "rb") as attachment:
@@ -231,60 +331,66 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     #    message.attach(part)
     
     # 發送郵件
+        wserr = 'N'
+        seq = j
+        wsmessage = ''
         try:
+            #tracemsg(line_access_token,"server " ,push_to)
             server = smtplib.SMTP(smtp_server, smtp_port)
             server.starttls()
-#            time.sleep(1)
             wk_addr="$$$$$"
+            #tracemsg(line_access_token,"login " ,push_to)
             server.login(smtp_username,       smtp_password)
-            time.sleep(1)
+            time.sleep(0.5)
 
             wk_addr = to_addr 
+            #tracemsg(line_access_token,"server.sendmail " ,user_id)    
             server.sendmail(smtp_username,  wk_addr  , message.as_string())
-             
             server.quit()
             wssendcounter = wssendcounter + 1
-        except Exception as e:
-        #except :
-        #    exc_type, exc_value, exc_traceback = sys.exc_info()
-        #    print("Exception Type:===>", exc_type)
-        #    print("Exception Value:", exc_value)
-        #    print("Traceback Object:", exc_traceback)
-            print(f"第 {loopidx + 1 } 封郵件發送失敗：{e} \n {smtp_username} {smtp_password} {smtp_port} {wk_addr} \n ")
-
-            print ("push error msg " + push_to )
-            message = TextSendMessage(text="第 " +  str(loopidx) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username + "  可能暫時被封鎖 ，請使用 outlook.com 登入，並依照指示作解鎖\n")
-            line_bot_api.push_message(push_to, message)
-            print (" return due to error")
-            return("")  
+        #except Exception as e:
+        except :
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            #print("Exception Type:===>", exc_type)
+            #print("Exception Value:", exc_value)
+            #print("Traceback Object:", exc_traceback)
+            print("第 " + str( seq  + 1) + " 封郵件發送失敗 ：" +  smtp_username )
+            wserr = 'Y'
+            
          
-        loopidx = loopidx + 1
+        #loopidx = loopidx + 1
         sendcnt = sendcnt + 1
-        print (" 第 " + str(loopidx) + "發送成功")
-        if sendcnt == wspush :
-           print ("push msg " + push_to )
-           message = TextSendMessage(text="已完成   :" +  str(loopidx) + " 信件發送" )
-           line_bot_api.push_message(push_to, message)
-           sendcnt = 0
-    #line_bot_api.reply_message(event.reply_token, message)   
+        if wserr == 'N':
+            print (" 第 " + str(counter) + "發送成功")
+            wsmessage =  "發送第" +  str(counter) + "封 信件發送"  + " ==>\n  " +  wsemail 
+        else:
+            wsmessage = "第 " +  str(counter) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username + "  可能暫時被封鎖 ，請使用 outlook.com 登入，並依照指示作解鎖\n"
 
-        if loopidx  == targetno :
+#        line_bot_api = LineBotApi(line_access_token)
+        message = TextSendMessage(text="累計已完成:" +  str(counter) + "-" + str(targetno) + "封 發送" )
+        wsmessage = wsmessage + "\n"  + "    累計已完成 :" +  str(counter) + "-" + str(targetno) + " 封 發送\n"
+                #line_bot_api.push_message(push_to, message)
+    #            sendcnt = 0
+         
+        if counter   >= targetno    :
             print(f"{targetno} emails complete " + push_to)  
-            wssenddetail = wssenddetail + str(loopidx)  + ",  "   + " " + smtp_username + "=> " + to_addr   + "\n"
-            message = TextSendMessage(text="發送完成  共計發送   :" +  str(loopidx)  + " 封信件" )
-            line_bot_api.push_message(push_to, message)
-            print (" complete send return to app.py")
-            return("") 
-               
-    # 記錄已發送的郵件
-    #    sent_list.append(f"{to_addr},{subject}")
-    #    #with open(userFolder.strip('\n') + "_SEND.LOG", "a", encoding="utf-8") as f:
-    #    with open(userFolder.strip('\n') + "_SEND.LOG", "a", encoding="utf-8") as f:
-    #        f.write(f"{loopidx} , {datetime.datetime.now()},  {to_addr},{subject}\n")
-    #        now = datetime.datetime.now()
-    #        wssenddetail = wssenddetail + str(loopidx)  + ",  "  + " " + smtp_username + "=> " + to_addr   + "\n"
- 
-
+        #    wssenddetail = wssenddetail + str(loopidx)  + ",  "   + " " + smtp_username + "=> " + to_addr   + "\n"
+            
+            message = TextSendMessage(text="發送完成  累計發送   :" +  str(targetno)  + " 封信件" )
+            wsmessage = wsmessage + "\n\n" + "發送完成  累計發送   :" +  str(targetno)  + " 封信件"
+         
+        counter = counter +1
+  
+        wstr = mailfn + "," + str(counter) + "," + str(smtp_idx) + "," + str(sendcnt) 
+        #wsmessage = wsmessage + "\n" + str(counter) + "," + str(smtp_idx) + "," + str(sendcnt) 
+        with open("sendmail.log", "w", encoding="utf-8") as f:            
+                f.write(wstr) 
+        print (wstr)   
+        f.close()
+  
+        time.sleep(0.5)
+    
+    
     # 更新郵件smtp記錄
     #    #with open(userFolder.strip('\n') + "_smtp_send_counter.log", "w", encoding="utf-8") as f:
     #    with open(userFolder.strip('\n') + "_smtp_send_counter.log", "w", encoding="utf-8") as f:            
@@ -295,11 +401,27 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         #with open(userFolder.strip('\n') +"/mail_counter.log", "w", encoding="utf-8") as f:    
         #    f.write(str(counter))
         
-        time.sleep(0.5)
+    time.sleep(0.5)
 
-    print(  " return from email \n" + wssenddetail + "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
-    return("")
+    return(wsmessage) 
 
+
+def build_logfn(wsfn):
+    wssplit = wsfn.split('.')
+    return wssplit[0]
+
+def copy_to_local(url , filename,token,to):
+    #tracemsg (token,"copy to local " + url  + " " + filename,to)
+    try:
+        urllib.request.urlretrieve(url, filename)
+        #tracemsg(token,"download " + url   + " to " + filename ,to )
+        #print("文件已成功复制到本地")
+    except urllib.error.URLError as e:
+        tracemsg(token,"download " + url   + " fail  " + e ,to )
+        print("下载文件时出错:", e)
+
+
+    #tracemsg("download " + url   + " to " + filename )
 
 def loadfile(lineid,msg,userFolder ):
     
@@ -311,7 +433,7 @@ def loadfile(lineid,msg,userFolder ):
     line = file.readline().strip('\n')   #line1 githubproject
     #line=line.strip('\n')
     wsftpflr= line[12:].strip()
-    #ftpurl = 'https://mdcgenius.000webhostapp.com/key.txt'
+    
  
     file.close()
     wsflr = ''
@@ -379,13 +501,14 @@ def check_url_file(wsurl):
     return ''    
 def file_exsit(filename):
     # 檢查文件是否存在
+    print ('check file ' + filename)
     if os.path.exists(filename):
-        print(f'File {filename} exists')
+        #print(f'File {filename} exists')
         return  ''
     else:
-        print(f'File {filename} does not exist')
+        #print(f'File {filename} does not exist')
         wsreturn = 'File  : ' + filename + ' does not exist'
-        return wsreturn 
+        return 'N' #wsreturn 
 def initcounter(lineid,msg,userFolder ):
     
    
@@ -424,6 +547,58 @@ def initcounter(lineid,msg,userFolder ):
             f.write(str(0))
     
     return("counter initialize complete " + wslog)
+
+
+def tracemsg(line_access_token,msg,to ):
+    line_bot_api = LineBotApi(line_access_token)
+    message = TextSendMessage(text=msg )
+    line_bot_api.push_message(to , message)
+
+
+ 
+#
+##from linebot.models import TextSendMessage
+#import requests
+
+def send_heartbeat1(line_access_token, to):
+
+    return()
+
+    # 发送心跳请求
+    line_bot_api = LineBotApi(line_access_token)
+    message = TextSendMessage(text="REQUEST GET")
+    line_bot_api.push_message(to, message)
+
+    response = requests.get('https://www.notfnurl.com', allow_redirects=True, verify=False)  # 替换为你的应用程序的 URL
+    print(response_text)
+    if response.status_code == 200:
+        response_text = response.text
+        line_bot_api = LineBotApi(line_access_token)
+        message = TextSendMessage(text="heartbeat1 : " + response_text)
+        line_bot_api.push_message(to, message)
+    else:
+        error_message = "Failed to send heartbeat"
+        line_bot_api = LineBotApi(line_access_token)
+        message = TextSendMessage(text=error_message)
+        line_bot_api.push_message(to, message)
+
+    # 检查响应状态码
+    if response.status_code == 200:
+        print('Heartbeat sent successfully')
+    else:
+        print('Failed to send heartbeat')    
+def send_heartbeat():
+    # 发送心跳请求
+    return(' ')
+
+    response = requests.get('https://mdcbot9.onrender.com/heartbeat')  # 替换为你的应用程序的 URL
+   
+
+    # 检查响应状态码
+    if response.status_code == 200:
+        print('Heartbeat sent successfully')
+    else:
+        print('Failed to send heartbeat')
 
 def check_line_id(ftpurl ,lineid):
      
@@ -467,6 +642,20 @@ def test_func(msg):
     wmsg =  "我跟你說一樣的 : " + msg 
     
     return (wmsg )
- 
+
+from linebot import LineBotApi
+from linebot.models import TextSendMessage, PostbackAction, QuickReply
+
+#https://mdcgenius.000webhostapp.com/admin/smail.html?from=facebook%20%3Cjj0922792265@outlook.com%3E&pwd=toyota1234&to=ejob@livemail.tw&subject=subject230409.txt&body=body230409.txt
+
+def listfile():
+
+    url = "https://mdcbot9.onrender.com"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    for link in soup.find_all("a"):
+        file_url = url + link.get("href")
+        print(file_url)
 #if __name__ == '__main__':
 #    app.run()

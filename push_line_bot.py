@@ -15,7 +15,7 @@ payload = {
     "messages": [
         {
             "type": "text",
-            "text": "你好，這是一條來自Line Bot的訊息！"
+            "text": "你好，這是一條來自Line Bot(push_line_bot)的訊息！"
         }
     ]
 }
