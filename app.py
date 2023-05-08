@@ -260,7 +260,7 @@ def handle_message(event):
         mailconfig= "/mailconfig.json"
         wsftpflr =  os.environ.get('linebot_ftpurl')
         url = wsftpflr + userFolder + mailconfig #http://www.abc.com/cust.json"
-        tracemsg(line_access_token,url + "*" + userFolder + "*" ,wsid)
+        #tracemsg(line_access_token,url + "*" + userFolder + "*" ,wsid)
         response = urllib.request.urlopen(url)
         data = response.read().decode("utf-8")
         js_dta = json.loads(data)
@@ -269,6 +269,7 @@ def handle_message(event):
         j = 1
         wshow = ''
         while j <= int(batch) :
+            tracemsg(line_access_token,url + "call send_mail" ,wsid)
             sendlog = send_mail(usr,msg,userFolder,user_id, group_id)
             wshow = wshow + sendlog + "\n" 
             time.sleep(0.5)
