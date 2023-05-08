@@ -117,14 +117,14 @@ print(line_channel_secret)
 line_bot_api = LineBotApi(line_access_token)
 handler = WebhookHandler(line_channel_secret)
 
-
+print("finished")
 
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/rich4u", methods=['POST'])
 def callback():
 
-    # print(" 0000 - 開始 call back 處理")
+    print(" 0000 - 開始 call back 處理")
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
     # get request body as text
@@ -136,7 +136,7 @@ def callback():
         handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
-   #print("0000 - CALL BACK 處理結束 ")
+    print("0000 - CALL BACK 處理結束 ")
     return 'OK'  #ok(200)
 
 
@@ -145,7 +145,7 @@ def callback():
 def handle_message(event):
 
 
-    #print("  0010 - 開始 處理 handle message entry")
+    print("  0010 - 開始 處理 handle message entry")
     user_id = ""
     group_id = ""
     usr =event.source.user_id
