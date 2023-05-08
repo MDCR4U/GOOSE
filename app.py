@@ -269,12 +269,12 @@ def handle_message(event):
         j = 1
         wshow = ''
         while j <= int(batch) :
-            tracemsg(line_access_token,url + "call send_mail" ,wsid)
+            #tracemsg(line_access_token,url + "call send_mail" ,wsid)
             sendlog = send_mail(usr,msg,userFolder,user_id, group_id)
             wshow = wshow + sendlog + "\n" 
             time.sleep(0.5)
             j = j + 1
-        wshow = wshow + "\ｎ請稍後  繼續發送．．．．．"
+        wshow = wshow + "\n請稍後  繼續發送．．．．．"
          
          
         line_bot_api = LineBotApi(line_access_token)
@@ -339,9 +339,7 @@ def handle_message(event):
         #    reply_text = "您是在群組或聊天室中"
 
         #print(line_access_token)
-        channel_access_token = "gd2k8snxpn3PP+nC+spxDIgQF6ZTtjfS/vHmqOIEJ8W/B1bryahPh61EfFIepnHqfjTQ4zhc29120TvtHVjk4dMB5vkrJFtvcjO07389gomlkggI/rMJCoid9PCCr6O3v0dTY2R3n4FFA6IMr1D5twdB04t89/1O/w1cDnyilFU="
-      #  print("channel_access_token *" + channel_access_token + "*")
-       # print("   line_access_token *" + line_access_token + "*")
+         
 # 建立 LineBotApi 物件
         line_bot_api = LineBotApi(line_access_token)
         message = TextSendMessage(text=" 您說 " + msg  )
