@@ -247,7 +247,7 @@ def handle_message(event):
     #        print("Traceback Object:", exc_traceback)
     
     if '/SMAIL' in msg.upper():     #isupper(), islower(), lower(), upper()
-        tracemsg(line_access_token,"start send mail",wsid)
+        #tracemsg(line_access_token,"start send mail",wsid)
         print (" CALL Send Mail")
         if userFolder == '' :
             message = TextSendMessage(text= "找不到 發送信件的授權資料，請記住您的代碼 " + usr +"\n與 系統管理員聯絡申請授權 " )
@@ -260,7 +260,7 @@ def handle_message(event):
         mailconfig= "/mailconfig.json"
         wsftpflr =  os.environ.get('linebot_ftpurl')
         url = wsftpflr + userFolder + mailconfig #http://www.abc.com/cust.json"
-        tracemsg(line_access_token,url,wsid)
+        tracemsg(line_access_token,url + "*" + userFolder + "*" ,wsid)
         response = urllib.request.urlopen(url)
         data = response.read().decode("utf-8")
         js_dta = json.loads(data)
