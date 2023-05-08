@@ -99,7 +99,7 @@ ispostback = 'N'
 
 # 读取环境变量的值
 ftpurl = os.environ.get('linebot_ftpurl')
-
+print("ftpurl = " + ftpurl)
 
 # 确保当前目录下存在 "admin" 文件夹
 if not os.path.exists("admin"):
@@ -110,7 +110,9 @@ if not os.path.exists("admin"):
 # Channel Secret
 
 line_access_token = os.environ.get('line_Token')
+print("token " + line_access_token)
 line_channel_secret = os.environ.get('line_Channel_Secret')
+print(line_channel_secret)
 
 line_bot_api = LineBotApi(line_access_token)
 handler = WebhookHandler(line_channel_secret)
