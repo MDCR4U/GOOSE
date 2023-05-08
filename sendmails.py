@@ -1,4 +1,4 @@
-# for upload file
+# for upload filesmtplib
 import urllib.request
 
 import sys
@@ -72,7 +72,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 # 取得發送郵件  環境
     mailconfig= "/mailconfig.json"
     url = wsftpflr + userFolder + mailconfig #http://www.abc.com/cust.json"
-    tracemsg(line_access_token,url,push_to)
+#    tracemsg(line_access_token,url,push_to)
     response = urllib.request.urlopen(url)
     data = response.read().decode("utf-8")
     js_dta = json.loads(data)
@@ -111,7 +111,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     wslog  = file.readline()
     wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8') 
     wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' ' + mailfn 
-    
+    tracemsg(line_access_token,'sendmail.log' + wserrmsg,push_to)
    
     if wslogs[0] != mailfn  :
         wslogs[1] = mailidx
@@ -127,7 +127,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         wslog  = file.readline()
         wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8')     
         wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' ' + mailfn 
-        #tracemsg(line_access_token,wserrmsg,push_to)
+        tracemsg(line_access_token,wserrmsg,push_to)
         
         f.close()
              
@@ -149,19 +149,19 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         tracemsg(line_access_token," 等候 環境建立" ,push_to)
         url = wsftpflr + userFolder.strip('\n') + "/" + smtpfn   #"/smtp.csv"
         
-        #tracemsg(line_access_token," copy from url " + url ,push_to)
+        tracemsg(line_access_token," copy from url " + url ,push_to)
         copy_to_local(url ,  smtpfn,line_access_token,push_to  )
         
         url = wsftpflr + userFolder.strip('\n') +"/" + mailfn #'/mail.csv'
-        #tracemsg(line_access_token," copy from url " + url ,push_to)
+        tracemsg(line_access_token," copy from url " + url ,push_to)
         copy_to_local(url , mailfn,line_access_token,push_to )
         
         url = wsftpflr + userFolder.strip('\n') + "/" + bodyfn # '/body.txt'
-        #tracemsg(line_access_token," copy from url " + url ,push_to)
+        tracemsg(line_access_token," copy from url " + url ,push_to)
         copy_to_local(url , bodyfn,line_access_token,push_to)
         
         url = wsftpflr + userFolder.strip('\n') +  "/" + subjectfn #'/subject.txt'
-        #tracemsg(line_access_token," copy from url " + url ,push_to)
+        tracemsg(line_access_token," copy from url " + url ,push_to)
         copy_to_local(url , subjectfn ,line_access_token,push_to)
      
 
