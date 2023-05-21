@@ -189,7 +189,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         smtp_list = [row for row in reader]        
     wsstr = ' '.join (str(e) for e in smtp_list)
     wserrmsg = "smtp list   \n" + wsstr
-    #tracemsg(line_access_token,wserrmsg ,push_to)
+    tracemsg(line_access_token,str(len(smtp_list)) + wserrmsg ,push_to)
     
     # url file
     if 1 == 2 :                # url file
@@ -317,7 +317,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
    
     for j, row in enumerate(rows):    #rows : mail.csv
          
-        if smtp_idx >= len (smtp_list) :
+        if smtp_idx +1  >= len (smtp_list) :
            smtp_idx  = 0
         else :
             smtp_idx = smtp_idx + 1
