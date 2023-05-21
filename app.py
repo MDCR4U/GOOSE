@@ -305,9 +305,11 @@ def handle_message(event):
     elif msg.upper()[0:9] == '/DEMOMAIL'  :
         sendlog = demomail(msg)
         message = TextSendMessage(text= "完成信件發送 : " + sendlog)
-        
         line_bot_api.reply_message(event.reply_token, message)          
-           
+    elif msg.upper()[0:7] == '/MAILLOG'  :
+        sendlog = maillog(msg)
+        message = TextSendMessage(text= "發送紀錄 : " + sendlog)
+        line_bot_api.reply_message(event.reply_token, message)            
     
 #    elif '/init' in msg:
 #        wsts = initcounter(usr,msg,userFolder) 

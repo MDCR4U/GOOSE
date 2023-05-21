@@ -29,7 +29,20 @@ from flask import Flask
 #app = Flask(__name__)
 #@app.route('/')
  #================= for send mail =================
- 
+def maillog():
+    logfn = 'sendmail.log'  #build_logfn(mailfn) + '_log.txt'
+    if file_exsit(logfn) == 'N':
+        return ( "發送紀錄 不存在 ")
+     
+       
+    
+    #tracemsg(line_access_token,"open log " ,push_to)
+    file = open('sendmail.log','r',encoding="utf-8")
+    wslog  = file.readline()
+    wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8') 
+    wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' '  
+    return(wserrmsg)
+
 def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     print(" aaaa 開始發送信件 " + wmsg )
     #userFolder = 'admin'
