@@ -136,7 +136,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         wslogs[1] = '1' #mailidx
         wslogs[2] = '0' #smtpidx 
         wslogs[3] = '0'
-        wstr = mailfn + "," + mailidx + "," + smtpidx + "," + '0'
+        wstr = mailfn + "," + "1"  + "," + "0"  + "," + '0'
         isnew = 'Y'
         tracemsg(line_access_token,"new record " + wstr,push_to)
         with open("sendmail.log", "w", encoding="utf-8") as f:            
