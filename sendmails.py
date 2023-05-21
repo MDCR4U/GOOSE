@@ -321,8 +321,10 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
            smtp_idx  = 0
         else :
             smtp_idx = smtp_idx + 1
-        tracemsg(line_access_token,"smtpidx " + str(int (smtp_idx) + " " + smtp_list[smtp_idx][0]) ,push_to)    
-        smtp_username = smtp_list[smtp_idx][0]
+
+        smtp_username = smtp_list[smtp_idx][0]    
+        tracemsg(line_access_token,"smtpidx " + str(int (smtp_idx)) + " " + smtp_username ,push_to)    
+        
         smtp_password = smtp_list[smtp_idx][1]
         
         to_addr = row[0]
