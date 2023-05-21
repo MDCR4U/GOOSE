@@ -25,7 +25,8 @@ def demomail(msg):
     url = wsftpflr + "json/" + wjson_file #http://www.abc.com/cust.json"
     response = requests.get(url)
     if response.status_code != 200:
-        return (" Demo Mail not config")
+        print (response.status_code) 
+        return (" Demo Mail not config " + url )
     
     
     print(url)
