@@ -120,7 +120,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         wstr = "mailfn"  + "," + "0"  + "," + "0"  + "," + '0'
  
         with open("sendmail.log", "w", encoding="utf-8") as f:     
-            tracemsg(line_access_token,"write new " + wstr ,push_to)       
+            #tracemsg(line_access_token,"write new " + wstr ,push_to)       
             f.write(wstr) 
             f.close()
        
@@ -130,11 +130,11 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     wslog  = file.readline()
     wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8') 
     wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' ' + mailfn 
-    tracemsg(line_access_token,'sendmail.log ' + wslog +"-" + mailfn ,push_to)
+    #tracemsg(line_access_token,'sendmail.log ' + wslog +"-" + mailfn ,push_to)
    
     if wslogs[0] != mailfn  :
-        wslogs[1] = mailidx
-        wslogs[2] = smtpidx 
+        wslogs[1] = '1' #mailidx
+        wslogs[2] = '0' #smtpidx 
         wslogs[3] = '0'
         wstr = mailfn + "," + mailidx + "," + smtpidx + "," + '0'
         isnew = 'Y'
@@ -319,8 +319,8 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
    
     for j, row in enumerate(rows):    #rows : mail.csv
          
-        if smtp_idx +1  >= len (smtp_list) :
-           smtp_idx  = 0
+        if smtp_idx   >= len (smtp_list) :
+           smtp_idx  = 1
         else :
             smtp_idx = smtp_idx + 1
 
