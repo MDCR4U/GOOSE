@@ -151,6 +151,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
              
     mailidx = wslogs[1]
     smtpidx = wslogs[2]
+    tracemsg(line_access_token,wslogs[1] + "-" + wslogs[2], push_to)
     sendcnt = int(wslogs[3]) + 1
     file.close()
 
@@ -385,7 +386,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
             
          
         #loopidx = loopidx + 1
-        sendcnt = sendcnt + 1
+        #sendcnt = sendcnt + 1
         if wserr == 'N':
             print (" 第 " + str(counter) + "發送成功")
             wsmessage =  "發送第" +  str(counter) + "封 信件發送"  + smtp_username + " ==>\n  " +  wsemail 
