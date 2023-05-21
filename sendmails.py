@@ -319,10 +319,10 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
    
     for j, row in enumerate(rows):    #rows : mail.csv
          
-        if smtp_idx   >= len (smtp_list) + 1:
+        if smtp_idx   >= len (smtp_list) - 1:
            smtp_idx  = 1
-        else :
-            smtp_idx = smtp_idx + 1
+        #else :
+        #    smtp_idx = smtp_idx + 1
 
         smtp_username = smtp_list[smtp_idx][0]   
         smtp_sender = smtp_list[smtp_idx][2]
@@ -411,7 +411,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
          
         counter = counter +1
   
-        wstr = mailfn + "," + str(counter) + "," + str(smtp_idx) + "," + str(sendcnt) 
+        wstr = mailfn + "," + str(counter) + "," + str(smtp_idx + 1) + "," + str(sendcnt) 
         #wsmessage = wsmessage + "\n" + str(counter) + "," + str(smtp_idx) + "," + str(sendcnt) 
         with open("sendmail.log", "w", encoding="utf-8") as f:            
                 f.write(wstr) 
