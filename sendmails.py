@@ -189,7 +189,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         smtp_list = [row for row in reader]        
     wsstr = ' '.join (str(e) for e in smtp_list)
     wserrmsg = "smtp list   \n" + wsstr
-    tracemsg(line_access_token,wserrmsg ,push_to)
+    #tracemsg(line_access_token,wserrmsg ,push_to)
     
     # url file
     if 1 == 2 :                # url file
@@ -226,7 +226,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         rows = [row for i, row in enumerate(reader) if i == n]   # 只得取  第 n筆
         wsstr = ' '.join (str(e) for e in rows)  + '----' + str(counter)
         noMails = len(rows)
-        tracemsg(line_access_token,str(noMails)  ,push_to)
+        #tracemsg(line_access_token,str(noMails)  ,push_to)
         #return ('')
 
     if 1 ==2 :       # url file
@@ -313,8 +313,8 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         return( "\n\n" + "名單已全部發送完成 累計發送   :" +  str(targetno)  + " 封信件，\n 請從新上傳名單檔案"  )
     
 
-    tracemsg(line_access_token,str(len (smtp_list)) ,push_to)
-    tracemsg(line_access_token,str(len (smtp_idx)) ,push_to)
+   #tracemsg(line_access_token,str(len (smtp_list)) ,push_to)
+    tracemsg(line_access_token,"smtpidx " + str(int (smtp_idx)) ,push_to)
     for j, row in enumerate(rows):    #rows : mail.csv
          
         if smtp_idx >= len (smtp_list) :
@@ -385,7 +385,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         sendcnt = sendcnt + 1
         if wserr == 'N':
             print (" 第 " + str(counter) + "發送成功")
-            wsmessage =  "發送第" +  str(counter) + "封 信件發送"  + " ==>\n  " +  wsemail 
+            wsmessage =  "發送第" +  str(counter) + "封 信件發送"  + smtp_username + " ==>\n  " +  wsemail 
         else:
             wsmessage = "第 " +  str(counter) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username + "  可能暫時被封鎖 ，請使用 outlook.com 登入，並依照指示作解鎖\n"
 
