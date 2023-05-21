@@ -58,7 +58,7 @@ def demomail(msg):
 
     message = MIMEMultipart()
     print(sendfrom + " <" +  username + ">")
-    message["From"] = sendfrom + "<" +  username + ">"
+    message["From"] = username  #sendfrom + "<" +  username + ">"
     message["To"] =  receiver 
     message["Subject"] = subject 
 
