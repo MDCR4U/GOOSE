@@ -314,13 +314,14 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     
 
    #tracemsg(line_access_token,str(len (smtp_list)) ,push_to)
-    tracemsg(line_access_token,"smtpidx " + str(int (smtp_idx)) ,push_to)
+   
     for j, row in enumerate(rows):    #rows : mail.csv
          
         if smtp_idx >= len (smtp_list) :
            smtp_idx  = 0
         else :
             smtp_idx = smtp_idx + 1
+        tracemsg(line_access_token,"smtpidx " + str(int (smtp_idx) + " " + smtp_list[smtp_idx][0]) ,push_to)    
         smtp_username = smtp_list[smtp_idx][0]
         smtp_password = smtp_list[smtp_idx][1]
         
