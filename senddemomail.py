@@ -14,7 +14,7 @@ from email.mime.application import MIMEApplication
 def demomail(msg):
 # /demomail#jj0922792265@outlook.com#
  
-    wjson_file = "demosmtp.json"
+    wjson_file = "demosmtpx.json"
     wsftpflr = os.environ.get('linebot_ftpurl')
 # 讀取 JSON 檔案  local
 #   # with open("cbd.json" , "r") as f:
@@ -28,6 +28,7 @@ def demomail(msg):
     js_dta = json.loads(data)
     
     username = js_dta["username"]    #"tt6395b@outlook.com" 
+    print(username)
     password = js_dta["password"]   #"bqm2151#"
     smtp_server = "smtp.office365.com"
     smtp_port = 587
