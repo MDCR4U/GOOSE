@@ -103,8 +103,13 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     logfn = 'sendmail.log'  #build_logfn(mailfn) + '_log.txt'
     if file_exsit(logfn) == 'N':
         wserrmsg = "發送紀錄 不存在 "
-        tracemsg(line_access_token,wserrmsg,push_to)
-        return("發送紀錄 不存在 ")
+        tracemsg(line_access_token,wserrmsg + b" create New ",push_to)
+        wstr = "mailfn"  + "," + "0"  + "," + "0"  + "," + '0'
+ 
+        with open("sendmail.log", "w", encoding="utf-8") as f:            
+            f.write(wstr) 
+            f.close()
+       
     
     #tracemsg(line_access_token,"open log " ,push_to)
     file = open('sendmail.log','r',encoding="utf-8")
