@@ -134,7 +134,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
    
     if wslogs[0] != mailfn  :
         wslogs[1] = '1' #mailidx
-        wslogs[2] = '0' #smtpidx 
+        wslogs[2] = '1' #smtpidx 
         wslogs[3] = '0'
         wstr = mailfn + "," + "1"  + "," + "0"  + "," + '0'
         isnew = 'Y'
