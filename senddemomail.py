@@ -8,6 +8,7 @@ import urllib.request
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
+import requests
 
 # 設置發件人的賬戶信息
 
@@ -22,6 +23,11 @@ def demomail(msg):
     #    js_dta = json.load(f)
 
     url = wsftpflr + "json/" + wjson_file #http://www.abc.com/cust.json"
+    response = requests.get(url)
+    if response.status_code != 200:
+        return (" Demo Mail not config")
+    
+    
     print(url)
     response = urllib.request.urlopen(url)
     data = response.read().decode("utf-8")
