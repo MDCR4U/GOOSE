@@ -112,11 +112,11 @@ if not os.path.exists("admin"):
 line_access_token = os.environ.get('line_Token')
 print("token " + line_access_token)
 line_channel_secret = os.environ.get('line_Channel_Secret')
-print(line_channel_secret)
-print ('87a7dbb8ab1d83d9ce6786ecdeaedf26')
+print("*" + line_channel_secret + "*")
+
 
 line_bot_api = LineBotApi(line_access_token)
-handler = WebhookHandler('87a7dbb8ab1d83d9ce6786ecdeaedf26') #line_channel_secret)
+handler = WebhookHandler(line_channel_secret)
 
 print("finished")
 
@@ -181,9 +181,14 @@ def handle_message(event):
         return  
 
     if  msg[0:5].upper() == "@INFO"  :
-        
+    
             wsinformation = get_informatiion(usr,group_id,user_type)
             message = TextSendMessage(text="informtion :" + wsinformation)
+            line_bot_api.reply_message(event.reply_token, message)  
+            return 
+    if  msg[0:5].upper() == "@USER"  :
+    
+            message = TextSendMessage(text="您的 使用者 ID :" + usr)
             line_bot_api.reply_message(event.reply_token, message)  
             return 
 

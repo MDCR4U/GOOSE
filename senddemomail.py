@@ -15,7 +15,7 @@ import requests
 def demomail(msg):
 # /demomail#jj0922792265@outlook.com#
  
-    wjson_file = "demosmtpx.json"
+    wjson_file = "demosmtp.json"
     wsftpflr = os.environ.get('linebot_ftpurl')
 # 讀取 JSON 檔案  local
 #   # with open("cbd.json" , "r") as f:
