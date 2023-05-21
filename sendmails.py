@@ -138,7 +138,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         wslogs[3] = '0'
         wstr = mailfn + "," + "1"  + "," + "0"  + "," + '0'
         isnew = 'Y'
-        tracemsg(line_access_token,"new record " + wstr,push_to)
+        #tracemsg(line_access_token,"new record " + wstr,push_to)
         with open("sendmail.log", "w", encoding="utf-8") as f:            
             f.write(wstr) 
             f.close()
@@ -146,13 +146,13 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         wslog  = file.readline()
         wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8')     
         wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' ' + mailfn 
-        tracemsg(line_access_token,wslog ,push_to)
+        #tracemsg(line_access_token,wslog ,push_to)
         
         f.close()
              
     mailidx = wslogs[1]
     smtpidx = wslogs[2]
-    tracemsg(line_access_token,wslogs[1] + "-" + wslogs[2], push_to)
+    #msg(line_access_token,wslogs[1] + "-" + wslogs[2], push_to)
     sendcnt = int(wslogs[3]) + 1
     file.close()
 
@@ -191,7 +191,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         smtp_list = [row for row in reader]        
     wsstr = ' '.join (str(e) for e in smtp_list)
     wserrmsg = "smtp list   \n" + wsstr
-    tracemsg(line_access_token,str(len(smtp_list)) + wserrmsg ,push_to)
+    #tracemsg(line_access_token,str(len(smtp_list)) + wserrmsg ,push_to)
     
     # url file
     if 1 == 2 :                # url file
@@ -241,9 +241,9 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 
 # 設置發件人的初始賬戶信息
      
-    smtp_username = smtp_list[smtp_idx][0]
-    smtp_password = smtp_list[smtp_idx][1]
-    smtp_sender = smtp_list[smtp_idx][2]
+    #smtp_username = smtp_list[smtp_idx][0]
+    #smtp_password = smtp_list[smtp_idx][1]
+    #smtp_sender = smtp_list[smtp_idx][2]
 
 # 設置發送成功的郵件地址和主旨的列表
     sent_list = []
@@ -319,12 +319,14 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
    
     for j, row in enumerate(rows):    #rows : mail.csv
          
-        if smtp_idx   >= len (smtp_list) :
+        if smtp_idx   >= len (smtp_list) + 1:
            smtp_idx  = 1
         else :
             smtp_idx = smtp_idx + 1
 
-        smtp_username = smtp_list[smtp_idx][0]    
+        smtp_username = smtp_list[smtp_idx][0]   
+        smtp_sender = smtp_list[smtp_idx][2]
+ 
         tracemsg(line_access_token,"smtpidx " + str(int (smtp_idx)) + " " + smtp_username ,push_to)    
         
         smtp_password = smtp_list[smtp_idx][1]
@@ -340,7 +342,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         #content =  "陌生開發優質粉絲團，人員募集中\n歡迎加入\n分享陌開心法及免費工具\n邀起您加入我們 請開啟網址 https://www.facebook.com/profile.php?id=100065188140659 按讚留言 獲取更多的資訊\n www.mydailychoice.com"
     # 準備發送郵件
         message = MIMEMultipart()
-        #message["From"] = smtp_list
+        
         message["From"] =    smtp_sender + " <" + smtp_username +">"  
         
         message["To"] = to_addr  
