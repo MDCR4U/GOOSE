@@ -136,9 +136,8 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         wslogs[1] = '1' #mailidx
         wslogs[2] = '1' #smtpidx 
         wslogs[3] = '0'
-        wstr = mailfn + "," + "1"  + "," + "1"  + "," + '0'
+        wstr = mailfn + "," + "1"  + "," + ""  + "," + '0'
         isnew = 'Y'
-        #tracemsg(line_access_token,"new record " + wstr,push_to)
         with open("sendmail.log", "w", encoding="utf-8") as f:            
             f.write(wstr) 
             f.close()
@@ -168,20 +167,15 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         
         tracemsg(line_access_token," 等候 環境建立" ,push_to)
         url = wsftpflr + userFolder.strip('\n') + "/" + smtpfn   #"/smtp.csv"
-        
-        tracemsg(line_access_token," copy from url*" + url + "*" ,push_to)
         copy_to_local(url ,  smtpfn,line_access_token,push_to  )
         
         url = wsftpflr + userFolder.strip('\n') +"/" + mailfn #'/mail.csv'
-        tracemsg(line_access_token," copy from url*" + url + "*" ,push_to)
         copy_to_local(url , mailfn,line_access_token,push_to )
         
         url = wsftpflr + userFolder.strip('\n') + "/" + bodyfn # '/body.txt'
-        tracemsg(line_access_token," copy from url " + url ,push_to)
         copy_to_local(url , bodyfn,line_access_token,push_to)
         
         url = wsftpflr + userFolder.strip('\n') +  "/" + subjectfn #'/subject.txt'
-        tracemsg(line_access_token," copy from url " + url ,push_to)
         copy_to_local(url , subjectfn ,line_access_token,push_to)
      
 
@@ -191,7 +185,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         smtp_list = [row for row in reader]        
     wsstr = ' '.join (str(e) for e in smtp_list)
     wserrmsg = "smtp list   \n" + wsstr
-    #tracemsg(line_access_token,str(len(smtp_list)) + wserrmsg ,push_to)
     
     # url file
     if 1 == 2 :                # url file
@@ -228,7 +221,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         rows = [row for i, row in enumerate(reader) if i == n]   # 只得取  第 n筆
         wsstr = ' '.join (str(e) for e in rows)  + '----' + str(counter)
         noMails = len(rows)
-        #tracemsg(line_access_token,str(noMails)  ,push_to)
         #return ('')
 
     if 1 ==2 :       # url file
@@ -289,7 +281,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     wsubject  = file.readline()
     subject = wsubject #.decode('utf-8') 
     file.close()
-    #tracemsg(line_access_token,subject ,push_to)
     if 1 == 2:    #ｕｒｌ　ｆｉｌｅ
         try:
             file = urllib.request.urlopen(url)
@@ -315,11 +306,10 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         return( "\n\n" + "名單已全部發送完成 累計發送   :" +  str(targetno)  + " 封信件，\n 請從新上傳名單檔案"  )
     
 
-   #tracemsg(line_access_token,str(len (smtp_list)) ,push_to)
    
     for j, row in enumerate(rows):    #rows : mail.csv
          
-        if smtp_idx   >= len (smtp_list) :
+        if smtp_idx   >= len (smtp_list) - 1:
            smtp_idx  = 1
         #else :
         #    smtp_idx = smtp_idx + 1
@@ -327,7 +317,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         smtp_username = smtp_list[smtp_idx][0]   
         smtp_sender = smtp_list[smtp_idx][2]
  
-        tracemsg(line_access_token,"smtpidx " + str(int (smtp_idx)) + " " + smtp_username ,push_to)    
+        #tracemsg(line_access_token,"smtpidx " + str(int (smtp_idx)) + " " + smtp_username ,push_to)    
         
         smtp_password = smtp_list[smtp_idx][1]
         
@@ -365,16 +355,13 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         seq = j
         wsmessage = ''
         try:
-            #tracemsg(line_access_token,"server " ,push_to)
             server = smtplib.SMTP(smtp_server, smtp_port)
             server.starttls()
             wk_addr="$$$$$"
-            #tracemsg(line_access_token,"login " ,push_to)
             server.login(smtp_username,       smtp_password)
             time.sleep(0.5)
 
             wk_addr = to_addr 
-            #tracemsg(line_access_token,"server.sendmail " ,user_id)    
             server.sendmail(smtp_username,  wk_addr  , message.as_string())
             server.quit()
             wssendcounter = wssendcounter + 1
@@ -441,7 +428,6 @@ def build_logfn(wsfn):
     return wssplit[0]
 
 def copy_to_local(url , filename,token,to):
-    #tracemsg (token,"copy to local " + url  + " " + filename,to)
     try:
         urllib.request.urlretrieve(url, filename)
         #tracemsg(token,"download " + url   + " to " + filename ,to )
@@ -451,7 +437,6 @@ def copy_to_local(url , filename,token,to):
         print("下载文件时出错:", e)
 
 
-    #tracemsg("download " + url   + " to " + filename )
 
 def loadfile(lineid,msg,userFolder ):
     
