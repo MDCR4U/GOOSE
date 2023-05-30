@@ -118,7 +118,6 @@ print("*" + line_channel_secret + "*")
 line_bot_api = LineBotApi(line_access_token)
 handler = WebhookHandler(line_channel_secret)
 
-print("finished")
 
 
 # 監聽所有來自 /callback 的 Post Request
@@ -222,37 +221,9 @@ def handle_message(event):
             msg = wmsg
 
 
-    #if msg.startswith('#'):
-#        url=githubutl +  "key.txt"
-#        url = "http://mdcgenius.tw/key.txt"
-#        file = urllib.request.urlopen(url)
-#        wkey =  file.readline()
-#        openai.api_key = wkey.decode('utf-8') 
-     #   openai.api_key = gpt_token.decode('utf-8') 
-        #file.close()
-     #   gpt_response = openai.Completion.create(
-     #       engine='text-davinci-003',
-     #       prompt=msg[1:],
-     #       temperature=0.5,
-     #       n=1,
-     #       max_tokens=200
-     #   ).choices[0].text
-
-    #    gpt_response =gpt_response[0:20]
-    #    print("Line BOT reply ======>" + gpt_response)
-    #    try :
-    #        line_bot_api.reply_message(
-    #            event.reply_token,
-    #            TextSendMessage(text="line bot reply gpt \n" + gpt_response)
-    #        )
-    #    except:
-    #        exc_type, exc_value, exc_traceback = sys.exc_info()
-    #        print("Exception Type:===>", exc_type)
-    #        print("Exception Value:", exc_value)
-    #        print("Traceback Object:", exc_traceback)
-    
+   
     if '/SMAIL' in msg.upper():     #isupper(), islower(), lower(), upper()
-        #tracemsg(line_access_token,"start send mail",wsid)
+        tracemsg(line_access_token,"start send mail",wsid)
         print (" CALL Send Mail")
         if userFolder == '' :
             message = TextSendMessage(text= "找不到 發送信件的授權資料，請記住您的代碼 " + usr +"\n與 系統管理員聯絡申請授權 " )
@@ -274,7 +245,7 @@ def handle_message(event):
         j = 1
         wshow = ''
         while j <= int(batch) :
-            #tracemsg(line_access_token,url + "call send_mail" ,wsid)
+            tracemsg(line_access_token,url + "call send_mail" ,wsid)
             sendlog = send_mail(usr,msg,userFolder,user_id, group_id)
             wshow = wshow + sendlog + "\n" 
             time.sleep(0.5)

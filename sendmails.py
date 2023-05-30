@@ -100,17 +100,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 
     directory = "tmp"  # 要创建的目录名称
 
-    #try:
-    #    os.makedirs(directory)
-    #    print("目录已成功创建")
-    #except FileExistsError:
-    ##    print("目录已经存在")
-    #except OSError as e:
-    #    print("创建目录时出错:", e)
-
-    
-  #  if not os.path.exists('tmp' ):
-  #      os.makedirs('tmp')
 
 # 取得 發送紀錄
     logfn = 'sendmail.log'  #build_logfn(mailfn) + '_log.txt'
@@ -151,7 +140,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
              
     mailidx = wslogs[1]
     smtpidx = wslogs[2]
-    #msg(line_access_token,wslogs[1] + "-" + wslogs[2], push_to)
+    tracemsg(line_access_token,wslog + "-" + wslogs[1] + "-" + wslogs[2], push_to)
     sendcnt = int(wslogs[3]) + 1
     file.close()
 
@@ -179,13 +168,13 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         copy_to_local(url , subjectfn ,line_access_token,push_to)
      
 
-    #tracemsg(line_access_token,"read smtp " + smtpfn ,push_to)
+    tracemsg(line_access_token,"read smtp " + smtpfn ,push_to)
     with open( smtpfn, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         smtp_list = [row for row in reader]        
     wsstr = ' '.join (str(e) for e in smtp_list)
     wserrmsg = "smtp list   \n" + wsstr
-    #tracemsg(line_access_token,wserrmsg,push_to)
+    tracemsg(line_access_token,wserrmsg,push_to)
     # url file
     if 1 == 2 :                # url file
         try:
@@ -202,18 +191,12 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 # 讀取郵件發送記錄
     counter = int(mailidx)
     smtp_idx = int(smtpidx)    
-   #try:
-    #    with open("smtp_send_counter.log", "r", encoding="utf-8") as f:
-    #        smtp_idx  = int(f.readline())
-    #except FileNotFoundError:
-    #    smtp_idx  = 0        
-
 
 # 讀取收件人列表
     #url = wsftpflr + userFolder.strip('\n') + '_mail.csv'
 
     n = counter                                                 # 要跳過的行數
-  
+    print ("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     tracemsg(line_access_token,"mail " + mailfn ,push_to)
     with open(mailfn, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
