@@ -197,7 +197,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
             smtp_count = len(smtp_list)   
         except :
             return ("寄件者資料 讀取錯誤 \n " + url)
-
+    tracemsg(line_access_token,smtp_list,push_to)
 #    print("發信者 人數" + str(len(smtp_list)))
 # 讀取郵件發送記錄
     counter = int(mailidx)
@@ -222,6 +222,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         wsstr = ' '.join (str(e) for e in rows)  + '----' + str(counter)
         noMails = len(rows)
         #return ('')
+        tracemsg(line_access_token,wsstr,push_to)
 
     if 1 ==2 :       # url file
         try:
