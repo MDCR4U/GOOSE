@@ -430,7 +430,7 @@ def build_logfn(wsfn):
 def copy_to_local(url , filename,token,to):
     try:
         urllib.request.urlretrieve(url, filename)
-        #tracemsg(token,"download " + url   + " to " + filename ,to )
+        tracemsg(token,"download " + url   + " 文件已成功复制到本地 " + filename ,to )
         #print("文件已成功复制到本地")
     except urllib.error.URLError as e:
         tracemsg(token,"download " + url   + " fail  " + e ,to )
