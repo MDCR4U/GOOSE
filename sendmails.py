@@ -179,13 +179,13 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         copy_to_local(url , subjectfn ,line_access_token,push_to)
      
 
-
+    tracemsg(line_access_token,"read smtp " + smtpfn ,push_to)
     with open( smtpfn, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         smtp_list = [row for row in reader]        
     wsstr = ' '.join (str(e) for e in smtp_list)
     wserrmsg = "smtp list   \n" + wsstr
-    
+    tracemsg(line_access_token,wserrmsg,push_to)
     # url file
     if 1 == 2 :                # url file
         try:
@@ -197,7 +197,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
             smtp_count = len(smtp_list)   
         except :
             return ("寄件者資料 讀取錯誤 \n " + url)
-    tracemsg(line_access_token,smtp_list,push_to)
+    
 #    print("發信者 人數" + str(len(smtp_list)))
 # 讀取郵件發送記錄
     counter = int(mailidx)
