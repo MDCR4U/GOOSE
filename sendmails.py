@@ -396,7 +396,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         #    f.write(str(counter))
         
     time.sleep(0.5)
-    tracemsg(line_access_token,wsmessage,push_to)
+    #tracemsg(line_access_token,wsmessage,push_to)
     return(wsmessage) 
 
 

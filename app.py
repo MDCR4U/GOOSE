@@ -223,7 +223,7 @@ def handle_message(event):
 
    
     if '/SMAIL' in msg.upper():     #isupper(), islower(), lower(), upper()
-        tracemsg(line_access_token,"start send mail",wsid)
+         
         print (" CALL Send Mail")
         if userFolder == '' :
             message = TextSendMessage(text= "找不到 發送信件的授權資料，請記住您的代碼 " + usr +"\n與 系統管理員聯絡申請授權 " )
