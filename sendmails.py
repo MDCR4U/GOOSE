@@ -257,7 +257,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
             content  = content + wsbody #.decode('utf-8') 
             wsbody  = file.readline()
     file.close()
-
+    tracemsg(line_access_token,wsbody,push_to)
 
     if 1==2  :    #url file
         try:
