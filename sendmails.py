@@ -179,13 +179,13 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         copy_to_local(url , subjectfn ,line_access_token,push_to)
      
 
-    tracemsg(line_access_token,"read smtp " + smtpfn ,push_to)
+    #tracemsg(line_access_token,"read smtp " + smtpfn ,push_to)
     with open( smtpfn, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         smtp_list = [row for row in reader]        
     wsstr = ' '.join (str(e) for e in smtp_list)
     wserrmsg = "smtp list   \n" + wsstr
-    tracemsg(line_access_token,wserrmsg,push_to)
+    #tracemsg(line_access_token,wserrmsg,push_to)
     # url file
     if 1 == 2 :                # url file
         try:
@@ -214,7 +214,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 
     n = counter                                                 # 要跳過的行數
   
-
+    tracemsg(line_access_token,"mail " + mailfn ,push_to)
     with open(mailfn, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         #rows = [row for i, row in enumerate(reader) if i >= n]
@@ -222,7 +222,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         wsstr = ' '.join (str(e) for e in rows)  + '----' + str(counter)
         noMails = len(rows)
         #return ('')
-        tracemsg(line_access_token,wsstr,push_to)
+    tracemsg(line_access_token,wsstr,push_to)
 
     if 1 ==2 :       # url file
         try:
@@ -250,7 +250,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 
 #getbody 
     # 檢查 發送內容
-
+    tracemsg(line_access_token,"read body " + bodyfn ,push_to)
     file = open(bodyfn,'r',encoding="utf-8")
     content = ''
     wsbody  = file.readline()
@@ -278,10 +278,12 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 #getsubject 
 
      # 檢查 主旨
+    tracemsg(line_access_token,"subject " + subjectfn ,push_to)
     file = open(subjectfn,'r',encoding="utf-8")
     wsubject  = file.readline()
     subject = wsubject #.decode('utf-8') 
     file.close()
+    tracemsg(line_access_token,subject ,push_to)
     if 1 == 2:    #ｕｒｌ　ｆｉｌｅ
         try:
             file = urllib.request.urlopen(url)
@@ -420,7 +422,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         #    f.write(str(counter))
         
     time.sleep(0.5)
-
+    tracemsg(line_access_token,wsmessage,push_to)
     return(wsmessage) 
 
 
