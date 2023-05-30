@@ -245,7 +245,6 @@ def handle_message(event):
         j = 1
         wshow = ''
         while j <= int(batch) :
-            tracemsg(line_access_token,url + "call send_mail" ,wsid)
             sendlog = send_mail(usr,msg,userFolder,user_id, group_id)
             wshow = wshow + sendlog + "\n" 
             time.sleep(0.5)

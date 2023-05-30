@@ -36,7 +36,6 @@ def maillog():
      
        
     
-    #tracemsg(line_access_token,"open log " ,push_to)
     file = open('sendmail.log','r',encoding="utf-8")
     wslog  = file.readline()
     wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8') 
@@ -58,7 +57,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     line_access_token = os.environ.get('line_Token')
 
 
-#    tracemsg(line_access_token,"開始發送信件 ",user_id)
     push_to = ""
     if group_id != "":
         push_to = group_id 
@@ -85,7 +83,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 # 取得發送郵件  環境
     mailconfig= "/mailconfig.json"
     url = wsftpflr + userFolder + mailconfig #http://www.abc.com/cust.json"
-#    tracemsg(line_access_token,url,push_to)
     response = urllib.request.urlopen(url)
     data = response.read().decode("utf-8")
     js_dta = json.loads(data)
@@ -107,19 +104,15 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         wserrmsg = "發送紀錄 不存在 "
         
         wstr = "mailfn"  + "," + "0"  + "," + "0"  + "," + '0'
-        tracemsg(line_access_token,wserrmsg + " create New " + wstr ,push_to)
         with open("sendmail.log", "w", encoding="utf-8") as f:     
-            #tracemsg(line_access_token,"write new " + wstr ,push_to)       
             f.write(wstr) 
             f.close()
        
     
-    #tracemsg(line_access_token,"open log " ,push_to)
     file = open('sendmail.log','r',encoding="utf-8")
     wslog  = file.readline()
     wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8') 
     wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' ' + mailfn 
-    #tracemsg(line_access_token,'sendmail.log ' + wslog +"-" + mailfn ,push_to)
    
     if wslogs[0] != mailfn  :
         wslogs[1] = '1' #mailidx
@@ -134,13 +127,11 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         wslog  = file.readline()
         wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8')     
         wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' ' + mailfn 
-        #tracemsg(line_access_token,wslog ,push_to)
         
         f.close()
              
     mailidx = wslogs[1]
     smtpidx = wslogs[2]
-    tracemsg(line_access_token,wslog + "-" + wslogs[1] + "-" + wslogs[2], push_to)
     sendcnt = int(wslogs[3]) + 1
     file.close()
 
