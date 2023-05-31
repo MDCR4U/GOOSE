@@ -69,7 +69,9 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
  # 發送比數
     wsmsg =  wmsg.split('#')   # msg = '/smail#90#'
     wsmailidx = 0
-    if len(wsmsg) > 1 :
+    print(" len msg " + str(len(wsmsg)) )
+          
+    if len(wsmsg) >= 2 :
         wsmailidx = int(wsmsg[2])
 
     wstarget = wsmsg[1]
@@ -136,9 +138,9 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
              
     mailidx = wslogs[1]
     if wsmailidx !=0 :       #/sendmail#100#12  12 取代  sendmail.log  的 mailidx 
-        print ("original mail idx " + str(mailidx))
+        #print ("original mail idx " + str(mailidx))
         mailidx = wsmailidx
-        print ("overide mailidx " + str(mailidx))
+        #print ("overide mailidx " + str(mailidx))
 
     smtpidx = wslogs[2]
     sendcnt = int(wslogs[3]) + 1
