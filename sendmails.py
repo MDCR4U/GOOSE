@@ -69,10 +69,10 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
  # 發送比數
     wsmsg =  wmsg.split('#')   # msg = '/smail#90#'
     wsmailidx = 0
-    print(" len msg " + str(len(wsmsg)) )
+    #print(" len msg " + str(len(wsmsg)) )
           
-    if len(wsmsg) >= 2 :
-        wsmailidx = int(wsmsg[2])
+    if len(wsmsg) > 2 :
+        wsmailidx = int(wsmsg[2])  # idx from 0, len from 1 
 
     wstarget = wsmsg[1]
     if (wstarget.isdigit()):
