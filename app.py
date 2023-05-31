@@ -233,6 +233,10 @@ def handle_message(event):
 
         j = 1
         wshow = ''
+        wsmsg =  msg.split('#')   # msg = '/smail#90#'
+        if len(wsmsg) > 2 :
+             batch = "1"
+             
         while j <= int(batch) :
             sendlog = send_mail(usr,msg,userFolder,user_id, group_id)
             wshow = wshow + sendlog + "\n" 
