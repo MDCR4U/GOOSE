@@ -68,6 +68,10 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 
  # 發送比數
     wsmsg =  wmsg.split('#')   # msg = '/smail#90#'
+    wsmailidx = 0
+    if len(wsmsg) > 1 :
+        wsmailidx = int(wsmsg[2])
+
     wstarget = wsmsg[1]
     if (wstarget.isdigit()):
         targetno = int(wstarget)
@@ -131,6 +135,11 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         f.close()
              
     mailidx = wslogs[1]
+    if wsmailidx !=0 :       #/sendmail#100#12  12 取代  sendmail.log  的 mailidx 
+        print ("original mail idx " + str(mailidx))
+        mailidx = wsmailidx
+        print ("overide mailidx " + str(mailidx))
+
     smtpidx = wslogs[2]
     sendcnt = int(wslogs[3]) + 1
     file.close()
@@ -178,7 +187,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         except :
             return ("寄件者資料 讀取錯誤 \n " + url)
     
-#    print("發信者 人數" + str(len(smtp_list)))
 # 讀取郵件發送記錄
     counter = int(mailidx)
     smtp_idx = int(smtpidx)    
@@ -187,7 +195,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     #url = wsftpflr + userFolder.strip('\n') + '_mail.csv'
 
     n = counter                                                 # 要跳過的行數
-    print ("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     #racemsg(line_access_token,"mail " + mailfn ,push_to)
     with open(mailfn, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
@@ -205,12 +212,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
                 rows = [row for i, row in enumerate(reader) if i >= n]
         except urllib.error.URLError:
             return ("收件者資料讀取錯誤 : " + url )
-
-# 設置發件人的初始賬戶信息
-     
-    #smtp_username = smtp_list[smtp_idx][0]
-    #smtp_password = smtp_list[smtp_idx][1]
-    #smtp_sender = smtp_list[smtp_idx][2]
 
 # 設置發送成功的郵件地址和主旨的列表
     sent_list = []
@@ -386,18 +387,9 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         time.sleep(0.5)
     
     
-    # 更新郵件smtp記錄
-    #    #with open(userFolder.strip('\n') + "_smtp_send_counter.log", "w", encoding="utf-8") as f:
-    #    with open(userFolder.strip('\n') + "_smtp_send_counter.log", "w", encoding="utf-8") as f:            
-    #        f.write(str(smtp_idx))        
-    # 更新郵件發送記錄
-    #    counter += 1
-        #with open(userFolder.strip('\n') +"_mail_counter.log", "w", encoding="utf-8") as f:
-        #with open(userFolder.strip('\n') +"/mail_counter.log", "w", encoding="utf-8") as f:    
-        #    f.write(str(counter))
         
     time.sleep(0.5)
-    #tracemsg(line_access_token,wsmessage,push_to)
+    print (wsmessage)
     return(wsmessage) 
 
 

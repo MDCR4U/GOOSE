@@ -99,7 +99,6 @@ ispostback = 'N'
 
 # 读取环境变量的值
 ftpurl = os.environ.get('linebot_ftpurl')
-print("ftpurl = " + ftpurl)
 
 # 确保当前目录下存在 "admin" 文件夹
 if not os.path.exists("admin"):
@@ -110,9 +109,7 @@ if not os.path.exists("admin"):
 # Channel Secret
 
 line_access_token = os.environ.get('line_Token')
-print("token " + line_access_token)
 line_channel_secret = os.environ.get('line_Channel_Secret')
-print("*" + line_channel_secret + "*")
 
 
 line_bot_api = LineBotApi(line_access_token)
@@ -124,7 +121,6 @@ handler = WebhookHandler(line_channel_secret)
 @app.route("/rich4u", methods=['POST'])
 def callback():
 
-    print(" 0000 - 開始 call back 處理")
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
     # get request body as text
@@ -132,11 +128,9 @@ def callback():
     app.logger.info("Request body: " + body)
   
     try:
-        print(" handle webhook body")
         handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
-    print("0000 - CALL BACK 處理結束 ")
     return 'OK'  #ok(200)
 
 
@@ -145,7 +139,6 @@ def callback():
 def handle_message(event):
 
 
-    print("  0010 - 開始 處理 handle message entry")
     user_id = ""
     group_id = ""
     usr =event.source.user_id
@@ -161,7 +154,6 @@ def handle_message(event):
     ftpurl = get_ftpurl()
 
     userFolder = check_line_id(ftpurl ,line_user_id)
-    print("userFolder " + userFolder)
     msg = event.message.text
 
     #@#SETUP#mdcgrniu           https://mdcgenius.000webhostapp.com/
@@ -194,7 +186,6 @@ def handle_message(event):
 
     if msg[1:8].upper()  == 'CONTINUE'  or msg[1:] == '繼續' :
         wscontinue =get_continue(line_user_id)
-#        print("continue token" + wscontinue)
         msg = wscontinue
         message = TextSendMessage(text="上一次查閱進度 :" + msg)
         line_bot_api.reply_message(event.reply_token, message)  
@@ -210,14 +201,12 @@ def handle_message(event):
 
     
     if msg[0:1] == "@" :
-#        print("token url " + ftpurl + "  token : " + msg[1:])
         wmsg = get_run_command(ftpurl,msg[1:].strip('\n') )
         if wmsg == 'NF' :
             message = TextSendMessage(text="找不到您要執行的命令 :" + msg)
             line_bot_api.reply_message(event.reply_token, message)   
             return 
         else :
-#            print ("convert msg " + wmsg)
             msg = wmsg
 
 
@@ -281,21 +270,7 @@ def handle_message(event):
         message = TextSendMessage(text= "發送紀錄 : " + sendlog)
         line_bot_api.reply_message(event.reply_token, message)            
     
-#    elif '/init' in msg:
-#        wsts = initcounter(usr,msg,userFolder) 
-#        message = TextSendMessage(text= wsts)
-#        line_bot_api.reply_message(event.reply_token, message)   
-#    elif '/load' in msg:
-#          loadsts  = loadfile(usr,msg,userFolder) 
-#          print(loadsts)
-#          message = TextSendMessage(text= "檔案設置處理 : " + loadsts)
-#          line_bot_api.reply_message(event.reply_token, message)            
-   
-    #elif '最新合作廠商' in msg:
-    #elif msg.upper()[0:5] == '/MAIN'  : #'/image#cbd' in msg:   
-    #    message = imagemap_5(msg)
-    #    line_bot_api.reply_message(event.reply_token, message)
-    #elif '最新活動訊息' in msg:
+
     elif msg.upper()[0:2] == '&&' or msg.upper()[0:2] == "&%" :
         #write_continue(line_user_id,msg)
         message = token(msg)
@@ -315,7 +290,6 @@ def handle_message(event):
         #    # 群組或聊天室
         #    reply_text = "您是在群組或聊天室中"
 
-        #print(line_access_token)
          
 # 建立 LineBotApi 物件
         line_bot_api = LineBotApi(line_access_token)
@@ -330,7 +304,6 @@ def handle_message(event):
 @handler.add(PostbackEvent)
 def handle_message(event):
     message = token(event.postback.data)
-    #print (" message = " + message )
     line_bot_api.reply_message(event.reply_token, message)
 
 
@@ -359,7 +332,7 @@ def welcome(event):
 
     print( " add new one : " +ids + "-" + name  + "\n")
 
-    message = TextSendMessage(text=f'{name}歡迎加入 MDC 富裕與您同在')
+    message = TextSendMessage(text=f'{name}-{ids} 歡迎加入')
     line_bot_api.reply_message(event.reply_token, message)
 
 def token(msg):
