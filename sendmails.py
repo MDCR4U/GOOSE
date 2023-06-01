@@ -393,6 +393,9 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
             wsmessage =  "發送第" +  str(counter) + "封 信件發送"   + " ==>\n  " +  wsemail 
         else:
             wsmessage = "第 " +  str(counter) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username + "  可能暫時被封鎖 ，請使用 outlook.com 登入，並依照指示作解鎖\n"
+            counter = counter - 1
+           # botuid  = os.environ.get('linebot_uid')
+            tracemsg(line_access_token ,"第 " +  str(counter) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username ,os.environ.get('linebot_uid') )
             print(wsmessage)
 
 #        line_bot_api = LineBotApi(line_access_token)
