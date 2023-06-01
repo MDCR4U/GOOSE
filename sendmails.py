@@ -75,6 +75,9 @@ def copy_from_webhost(lineid,wmsg,userFolder, user_id,group_id):
     
     url = wsftpflr + userFolder.strip('\n') +  "/" + subjectfn #'/subject.txt'
     copy_to_local(url , subjectfn ,line_access_token,push_to)
+    with open("sendmail.log", "w", encoding="utf-8") as f:            
+            f.write("email fail ") 
+            f.close()
     tracemsg(line_access_token," 環境更新完成" ,push_to)
 def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     #userFolder = 'admin'
@@ -326,7 +329,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
                 smtp_idx  = 1
             if  smtp_list[smtp_idx][3].upper() == 'X' :
                 smtp_idx = smtp_idx + 1
-                print ("smtp x " + str(smtp_idx) + " " + smtp_username )
+                print ("smtp x " + str(smtp_idx) + " " +  smtp_list[smtp_idx][0] )
             else :
                 loopsmtp = False
 
@@ -403,7 +406,10 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
             wsmessage =  " 信件發送失敗 " + "\n信箱 " + smtp_username + "  可能暫時被封鎖 ，請使用 outlook.com 登入，並依照指示作解鎖\n"
             counter = counter - 1
            # botuid  = os.environ.get('linebot_uid')
-            tracemsg(line_access_token ,"第 " +  str(counter) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username ,os.environ.get('linebot_uid') )
+            #tracemsg(line_access_token ,"第 " +  str(counter) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username ,os.environ.get('linebot_uid') )
+            with open("sendmail.log", "a", encoding="utf-8") as f:            
+                f.write(wstr) 
+            f.close()
             print(wsmessage)
 
 #        line_bot_api = LineBotApi(line_access_token)

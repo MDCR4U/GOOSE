@@ -273,7 +273,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, message)          
     elif msg.upper()[0:8] == '/MAILLOG'  :
         sendlog = maillog()
-        message = TextSendMessage(text= "發送紀錄 : " + sendlog)
+        message = TextSendMessage(text=  sendlog)
         line_bot_api.reply_message(event.reply_token, message)            
     
 
