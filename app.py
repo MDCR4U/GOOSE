@@ -246,7 +246,7 @@ def handle_message(event):
          
          
         line_bot_api = LineBotApi(line_access_token)
-        message = TextSendMessage(text="發送紀錄 :\n"+ wshow )
+        message = TextSendMessage(text= wshow )
         line_bot_api.reply_message(event.reply_token, message)    
     elif '/RELOAD' in msg.upper():     #isupper(), islower(), lower(), upper()
          copy_from_webhost(usr,msg,userFolder,user_id, group_id) 
