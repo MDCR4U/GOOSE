@@ -41,7 +41,41 @@ def maillog():
     wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8') 
     wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' '  
     return(wserrmsg)
-
+def copy_from_webhost(lineid,wmsg,userFolder, user_id,group_id):
+    print(" aaaa 開始導入環境 " + wmsg )
+    wsftpflr =  os.environ.get('linebot_ftpurl')
+    line_access_token = os.environ.get('line_Token')
+    push_to = ""
+    if group_id != "":
+        push_to = group_id 
+    else :
+        push_to = user_id   
+    # 取得發送郵件  環境
+    mailconfig= "/mailconfig.json"
+    url = wsftpflr + userFolder + mailconfig #http://www.abc.com/cust.json"
+    response = urllib.request.urlopen(url)
+    data = response.read().decode("utf-8")
+    js_dta = json.loads(data)
+    smtpfn =js_dta["smtp"] 
+    mailfn = js_dta["mail"] 
+    subjectfn =js_dta["subject"] 
+    bodyfn = js_dta["body"] 
+    smtpidx = js_dta["smtpidx"] 
+    mailidx = js_dta["mailidx"] 
+    wspush = int(js_dta["push"])
+    tracemsg(line_access_token," 等候 環境更新" ,push_to)
+    url = wsftpflr + userFolder.strip('\n') + "/" + smtpfn   #"/smtp.csv"
+    copy_to_local(url ,  smtpfn,line_access_token,push_to  )
+    
+    url = wsftpflr + userFolder.strip('\n') +"/" + mailfn #'/mail.csv'
+    copy_to_local(url , mailfn,line_access_token,push_to )
+    
+    url = wsftpflr + userFolder.strip('\n') + "/" + bodyfn # '/body.txt'
+    copy_to_local(url , bodyfn,line_access_token,push_to)
+    
+    url = wsftpflr + userFolder.strip('\n') +  "/" + subjectfn #'/subject.txt'
+    copy_to_local(url , subjectfn ,line_access_token,push_to)
+    tracemsg(line_access_token," 環境更新完成" ,push_to)
 def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     print(" aaaa 開始發送信件 " + wmsg )
     #userFolder = 'admin'
