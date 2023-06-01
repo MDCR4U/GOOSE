@@ -237,12 +237,12 @@ def handle_message(event):
         if len(wsmsg) > 2 :
              batch = "1"
              
-        while j <= int(batch) :
-            sendlog = send_mail(usr,msg,userFolder,user_id, group_id)
-            wshow = wshow + sendlog + "\n" 
-            time.sleep(0.5)
-            j = j + 1
-        wshow = wshow + "\n請稍後  繼續發送．．．．．"
+        #while j <= int(batch) :
+        sendlog = send_mail(usr,msg,userFolder,user_id, group_id)
+        wshow = wshow + sendlog + "\n" 
+        time.sleep(0.5)
+        j = j + 1
+        wshow = wshow + "請稍後  繼續發送．．．．．"
          
          
         line_bot_api = LineBotApi(line_access_token)
