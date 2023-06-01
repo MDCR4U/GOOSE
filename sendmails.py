@@ -319,9 +319,16 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
 
    
     for j, row in enumerate(rows):    #rows : mail.csv
-         
-        if smtp_idx   >= len (smtp_list) - 1:
-           smtp_idx  = 1
+        loopsmtp = True
+        while loopsmtp: 
+            if smtp_idx   >= len (smtp_list) - 1:
+                smtp_idx  = 1
+            if  smtp_list[smtp_idx][3] == 'X' :
+                smtp_idx = smtp_idx + 1
+                print ("smtp x " + str(smtp_idx) + " " + smtp_username )
+            else :
+                loopsmtp = False
+
         #else :
         #    smtp_idx = smtp_idx + 1
 
