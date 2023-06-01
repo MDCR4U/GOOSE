@@ -202,6 +202,9 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         
         url = wsftpflr + userFolder.strip('\n') +  "/" + subjectfn #'/subject.txt'
         copy_to_local(url , subjectfn ,line_access_token,push_to)
+        with open("sendmail.log", "w", encoding="utf-8") as f:            
+            f.write("email fail ") 
+            f.close()
      
 
     #tracemsg(line_access_token,"read smtp " + smtpfn ,push_to)
@@ -408,7 +411,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
            # botuid  = os.environ.get('linebot_uid')
             #tracemsg(line_access_token ,"第 " +  str(counter) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username ,os.environ.get('linebot_uid') )
             with open("sendmail.log", "a", encoding="utf-8") as f:            
-                f.write(wstr) 
+                f.write(wsmessage) 
             f.close()
             print(wsmessage)
 
