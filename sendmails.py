@@ -41,6 +41,21 @@ def maillog():
     wslogs = wslog.split(',') #subject = wsubject #.decode('utf-8') 
     wserrmsg =  ' '.join (str(e) for e in wslogs)  + " sendmail.log " + wslogs[0] + ' '  
     return(wserrmsg)
+def mailchk():
+    logfn = 'mailchk.log'  #build_logfn(mailfn) + '_log.txt'
+    if file_exsit(logfn) == 'N':
+        return ( "mailchk 紀錄 不存在 ")
+     
+    file = open('mailchk.log','r',encoding="utf-8")
+    content = ''
+    wsbody  = file.readline()
+    while wsbody:
+            content  = content + wsbody #.decode('utf-8') 
+            wsbody  = file.readline()
+    file.close()   
+    
+     
+    return(content)
 def copy_from_webhost(lineid,wmsg,userFolder, user_id,group_id):
     print(" aaaa 開始導入環境 " + wmsg )
     wsftpflr =  os.environ.get('linebot_ftpurl')
@@ -75,7 +90,7 @@ def copy_from_webhost(lineid,wmsg,userFolder, user_id,group_id):
     
     url = wsftpflr + userFolder.strip('\n') +  "/" + subjectfn #'/subject.txt'
     copy_to_local(url , subjectfn ,line_access_token,push_to)
-    with open("sendmail.log", "w", encoding="utf-8") as f:            
+    with open("mailchk.log", "w", encoding="utf-8") as f:            
             f.write("email fail ") 
             f.close()
     tracemsg(line_access_token," 環境更新完成" ,push_to)
@@ -202,7 +217,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         
         url = wsftpflr + userFolder.strip('\n') +  "/" + subjectfn #'/subject.txt'
         copy_to_local(url , subjectfn ,line_access_token,push_to)
-        with open("sendmail.log", "w", encoding="utf-8") as f:            
+        with open("mailchk.log", "w", encoding="utf-8") as f:            
             f.write("email fail ") 
             f.close()
      
@@ -410,7 +425,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
             counter = counter - 1
            # botuid  = os.environ.get('linebot_uid')
             #tracemsg(line_access_token ,"第 " +  str(counter) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username ,os.environ.get('linebot_uid') )
-            with open("sendmail.log", "a", encoding="utf-8") as f:            
+            with open("mailchk.log", "a", encoding="utf-8") as f:            
                 f.write(wsmessage) 
             f.close()
             print(wsmessage)

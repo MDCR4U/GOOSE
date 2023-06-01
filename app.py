@@ -275,7 +275,10 @@ def handle_message(event):
         sendlog = maillog()
         message = TextSendMessage(text=  sendlog)
         line_bot_api.reply_message(event.reply_token, message)            
-    
+    elif msg.upper()[0:8] == '/MAILCHK'  :
+        sendlog = mailchk()
+        message = TextSendMessage(text=  sendlog)
+        line_bot_api.reply_message(event.reply_token, message)  
 
     elif msg.upper()[0:2] == '&&' or msg.upper()[0:2] == "&%" :
         #write_continue(line_user_id,msg)
