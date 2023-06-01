@@ -77,7 +77,6 @@ def copy_from_webhost(lineid,wmsg,userFolder, user_id,group_id):
     copy_to_local(url , subjectfn ,line_access_token,push_to)
     tracemsg(line_access_token," 環境更新完成" ,push_to)
 def send_mail(lineid,wmsg,userFolder, user_id,group_id):
-    print(" aaaa 開始發送信件 " + wmsg )
     #userFolder = 'admin'
     smtpfn =""
     mailfn = ""
@@ -172,9 +171,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
              
     mailidx = wslogs[1]
     if wsmailidx !=0 :       #/sendmail#100#12  12 取代  sendmail.log  的 mailidx 
-        #print ("original mail idx " + str(mailidx))
         mailidx = wsmailidx
-        #print ("overide mailidx " + str(mailidx))
 
     smtpidx = wslogs[2]
     sendcnt = int(wslogs[3]) + 1
@@ -392,8 +389,8 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         #loopidx = loopidx + 1
         #sendcnt = sendcnt + 1
         if wserr == 'N':
-            print (" 第 " + str(counter) + "發送成功")
-            wsmessage =  "發送第" +  str(counter) + "封 信件發送"  + smtp_username + " ==>\n  " +  wsemail 
+            #wsmessage =  "發送第" +  str(counter) + "封 信件發送"  + smtp_username + " ==>\n  " +  wsemail 
+            wsmessage =  "發送第" +  str(counter) + "封 信件發送"   + " ==>\n  " +  wsemail 
         else:
             wsmessage = "第 " +  str(counter) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username + "  可能暫時被封鎖 ，請使用 outlook.com 登入，並依照指示作解鎖\n"
             print(wsmessage)
@@ -405,7 +402,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     #            sendcnt = 0
          
         if counter   >= targetno    :
-            print(f"{targetno} emails complete " + push_to)  
         #    wssenddetail = wssenddetail + str(loopidx)  + ",  "   + " " + smtp_username + "=> " + to_addr   + "\n"
             
             message = TextSendMessage(text="發送完成  累計發送   :" +  str(targetno)  + " 封信件" )
@@ -417,7 +413,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
         #wsmessage = wsmessage + "\n" + str(counter) + "," + str(smtp_idx) + "," + str(sendcnt) 
         with open("sendmail.log", "w", encoding="utf-8") as f:            
                 f.write(wstr) 
-        print (wstr)   
         f.close()
   
         time.sleep(0.5)
@@ -425,7 +420,6 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
     
         
     time.sleep(0.5)
-    print (wsmessage)
     return(wsmessage) 
 
 
