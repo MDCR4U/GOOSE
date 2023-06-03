@@ -421,7 +421,7 @@ def send_mail(lineid,wmsg,userFolder, user_id,group_id):
             #wsmessage =  "發送第" +  str(counter) + "封 信件發送"  + smtp_username + " ==>\n  " +  wsemail 
             wsmessage =  "發送第" +  str(counter) + "封信件"   + " ==> " +  wsemail 
         else:
-            wsmessage =  " 信件發送失敗 " + "\n信箱 " + smtp_username + "  可能暫時被封鎖 ，請使用 outlook.com 登入，並依照指示作解鎖\n"
+            wsmessage =  " 信件發送失敗 " + str(smtp_idx) + "\n信箱 " + smtp_username + "  可能暫時被封鎖 ，請使用 outlook.com 登入，並依照指示作解鎖\n"
             counter = counter - 1
            # botuid  = os.environ.get('linebot_uid')
             #tracemsg(line_access_token ,"第 " +  str(counter) + " 信件發送失敗 " + "\n\n  信箱 " + smtp_username ,os.environ.get('linebot_uid') )
